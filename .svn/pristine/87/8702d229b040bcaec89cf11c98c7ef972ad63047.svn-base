@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+	"http://struts.apache.org/dtds/struts-2.1.dtd" >
+<struts>
+	<package name="annotations" extends="default-package" namespace="/annotations">
+		
+		
+		<!--显示某人全部批注 -->
+		<action name="studentAnnotationInfo" class="com.annotation.action.books.annotationAction" method="studentAnnotationInfo">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!--显示某人某书批注，根据userId -->
+		<action name="studentBookAnnotationInfo" class="com.annotation.action.books.annotationAction" method="studentBookAnnotationInfo">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!--显示某人某书批注，根据userCode -->
+		<action name="studentBookAnnotaionInfoByCode" class="com.annotation.action.books.annotationAction" method="studentBookAnnotaionInfoByCode">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!--增加批注 -->
+		<action name="addAnnotation" class="com.annotation.action.books.annotationAction" method="addAnnotation">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!--删除批注 -->
+		<action name="deleteAnnotation" class="com.annotation.action.books.annotationAction" method="deleteAnnotation">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!--更新批注 -->
+		<action name="updateAnnotation" class="com.annotation.action.books.annotationAction" method="updateAnnotation">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!--显示用户列表 -->
+		<action name="classStudentList" class="com.annotation.action.books.annotationAction" method="classStudentList">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+	</package>    
+ 
+</struts> 

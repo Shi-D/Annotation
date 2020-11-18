@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd" >
+<struts>
+	<package name="homework" extends="default-package" namespace="/homework">
+		<!--学生查看作业根据作业list -->
+		<action name="stuHomeworkList"
+			class="com.annotation.action.homeworkmanagement.HomeworkInfoAction"
+			method="stuHomeworkList">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--根据作业id查看作业信息 -->
+		<action name="getHomeworkInfo"
+			class="com.annotation.action.homeworkmanagement.HomeworkInfoAction"
+			method="getHomeworkInfo">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<action name="homeworkByHWId"
+			class="com.annotation.action.homeworkmanagement.HomeworkInfoAction"
+			method="homeworkByHWId">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<action name="allHomeworkList"
+			class="com.annotation.action.homeworkmanagement.HomeworkInfoAction"
+			method="allHomeworkList">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<action name="classHaveHW"
+			class="com.annotation.action.homeworkmanagement.HomeworkInfoAction"
+			method="classHaveHW">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<action name="queryHomework"
+			class="com.annotation.action.homeworkmanagement.HomeworkInfoAction"
+			method="queryHomework">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+
+		<action name="addHomework"
+			class="com.annotation.action.homeworkmanagement.HomeworkInfoAction"
+			method="addHomework">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--修改作业 -->
+		<action name="modifyHomework"
+			class="com.annotation.action.homeworkmanagement.HomeworkInfoAction"
+			method="modifyHomework">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+
+		<action name="queryClassesByUserId"
+			class="com.annotation.action.homeworkmanagement.HomeworkInfoAction"
+			method="queryClassesByUserId">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+
+		<action name="deleteHomework"
+			class="com.annotation.action.homeworkmanagement.HomeworkInfoAction"
+			method="deleteHomework">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+
+		<action name="querySubmitedHomework"
+			class="com.annotation.action.homeworkmanagement.HomeworkInfoAction"
+			method="querySubmitedHomework">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+
+		<action name="evaluateSubmitedHomework"
+			class="com.annotation.action.homeworkmanagement.HomeworkInfoAction"
+			method="evaluateSubmitedHomework">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+
+		<action name="submitHomework"
+			class="com.annotation.action.homeworkmanagement.HomeworkInfoAction"
+			method="submitHomework">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<action name="getDetailHomework"
+			class="com.annotation.action.homeworkmanagement.HomeworkInfoAction"
+			method="getDetailHomework">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+				<action name="teaCorrectHomework"
+			class="com.annotation.action.homeworkmanagement.HomeworkInfoAction"
+			method="teaCorrectHomework">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+	</package>
+</struts> 

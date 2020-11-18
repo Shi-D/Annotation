@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+	"http://struts.apache.org/dtds/struts-2.1.dtd" >
+<struts>
+	<package name="studentBook" extends="default-package" namespace="/studentBook">
+	<!--学生班级书籍 -->
+		<action name="studentClassBook" class="com.annotation.action.studentManagement.StudentBookAction" method="studentClassBook">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+	<!--学生班级下拉 -->
+		<action name="studentBookInClass" class="com.annotation.action.studentManagement.StudentBookAction" method="studentBookInClass">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+	<!--学生最近书籍 -->
+		<action name="studentRecentBook" class="com.annotation.action.studentManagement.StudentBookAction" method="studentRecentBook">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+	</package>    
+ 
+</struts> 

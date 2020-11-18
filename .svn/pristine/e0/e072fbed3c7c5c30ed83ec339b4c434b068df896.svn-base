@@ -1,0 +1,241 @@
+package com.annotation.action.statistics;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.annotation.entityview.BookClassAnnotationView;
+import com.annotation.entityview.ClassStudentTeacherV;
+import com.annotation.entityview.studentInClassOrNot;
+import com.annotation.service.ExcelService;
+import com.framework.authority.entity.User;
+import com.framework.cache.DefaultDBCache;
+import com.framework.cache.impl.ColumnModelCacheImpl;
+import com.framework.common.ExportExcelUtil;
+import com.framework.common.SystemContext;
+import com.framework.excel.entity.ColumnModel;
+import com.framework.system.common.base.action.BaseGridAction;
+import com.framework.utils.URLUtils;
+
+public class ExcelAction extends BaseGridAction {
+
+	private Integer annotationId;
+	private Integer bookId;
+	private String annotationIds;
+	private Integer classId;
+	private String className;
+
+	private String columnNames;
+	private String propertyNames;
+	
+	private String studentIds;
+	
+	@Autowired
+	private ExcelService excelService;
+
+	// 导出某本书的某个班级所有批注
+	/*public void exportExcel() {
+		String hql;
+		List<Map<String, Object>> result = null;
+		System.out.println("filters:" + this.getFilters());
+		System.out.println("propertyNames:" + this.getPropertyNames());
+		System.out.println("columnNames:" + this.getColumnNames());
+		User user = SystemContext.getCurrentUser();
+		DefaultDBCache.init();
+		//使用班级名称和书本id作为查询条件
+		hql = ExportExcelUtil.createHQL(BookClassAnnotationView.class.getName(), this.getPropertyNames().split(",")) + 
+				" where organizationId = "	+ user.getOrganization().getId() + 
+				" and classId = " + this.getClassId() +
+				" and bookId = " + this.getBookId();
+		result = excelService.find(hql, this.getFilter()); 
+		ColumnModelCacheImpl columnModelCache = (ColumnModelCacheImpl) DefaultDBCache.getCacheStore(ColumnModelCacheImpl.CACHE_NAME);
+		columnModelCache.init();
+		List<ColumnModel> cmList = columnModelCache.getColumnModelList(ClassStudentTeacherV.TABLE_CODE, this.getPropertyNames().split(","));
+
+		//start 下面是yqy加的增加cmlist一个书名
+		List<ColumnModel> cmListCopy = new ArrayList<ColumnModel>();
+		ColumnModel bookname = new ColumnModel();
+		bookname.setWidth(15);
+		bookname.setCellFormatType(15);
+		bookname.setPropertyName("BookName");
+		cmListCopy.add(bookname);
+				
+		for(int i = 0;i < cmList.size();i++){
+			cmListCopy.add(cmList.get(i));
+		}
+				
+		//修改columnNames
+		StringBuilder sb = new StringBuilder(columnNames);
+		sb.insert(0, "书名,");
+		columnNames = sb.toString();
+				
+		//修改result
+		List<Map<String, Object>> bookName = null;
+		String hql_bookname = "select bookName as bookName from Books where bookId = "+this.getBookId();
+		bookName = excelService.find(hql_bookname, this.getFilter()); 
+		for(int i = 0;i < result.size();i++){
+			result.get(i).put("BookName",bookName.get(0).values().toString().replace("[","").replace("]",""));
+		}
+		//end
+		ExportExcelUtil.exportExcel(result, cmListCopy, "批注统计表", columnNames.split(","));
+	}*/
+	
+	
+	public void exportExcel() {
+		String hql;
+		List<Map<String, Object>> result = null;
+		User user = SystemContext.getCurrentUser();
+		DefaultDBCache.init();
+		//使用班级名称和书本id作为查询条件
+		hql = ExportExcelUtil.createHQL(BookClassAnnotationView.class.getName(), (this.getPropertyNames()+",userCode").split(",")) + 
+				" where organizationId = "	+ user.getOrganization().getId() + 
+				" and classId = " + this.getClassId() +
+				" and bookId = " + this.getBookId();
+		result = excelService.find(hql, this.getFilter()); 
+		ColumnModelCacheImpl columnModelCache = (ColumnModelCacheImpl) DefaultDBCache.getCacheStore(ColumnModelCacheImpl.CACHE_NAME);
+		columnModelCache.init();
+		List<ColumnModel> cmList = columnModelCache.getColumnModelList(ClassStudentTeacherV.TABLE_CODE, this.getPropertyNames().split(","));
+		System.out.println("cmListLength:"+cmList.size());
+		System.out.println("getPropertyNames:"+this.getPropertyNames().toString());
+		//start 下面是yqy加的增加cmlist一个书名
+		List<ColumnModel> cmListCopy = new ArrayList<ColumnModel>();
+		ColumnModel bookname = new ColumnModel();
+		bookname.setWidth(15);
+		bookname.setCellFormatType(15);
+		bookname.setPropertyName("BookName");
+		cmListCopy.add(bookname);
+				
+		for(int i = 0;i < cmList.size();i++){
+			cmListCopy.add(cmList.get(i));
+		}
+				
+		//修改columnNames
+		StringBuilder sb = new StringBuilder(columnNames);
+		sb.insert(0, "书名,");
+		columnNames = sb.toString();
+				
+		//修改result
+		List<Map<String, Object>> bookName = null;
+		String hql_bookname = "select bookName as bookName from Books where bookId = "+this.getBookId();
+		bookName = excelService.find(hql_bookname, this.getFilter()); 
+		for(int i = 0;i < result.size();i++){
+			result.get(i).put("BookName",bookName.get(0).values().toString().replace("[","").replace("]",""));
+			if(!result.get(i).get("annotationImage").toString().equals("")){
+				//获取图片的路径前缀
+				File file = new File(URLUtils.generateURLforAnnotation(result.get(i).get("userCode").toString()));
+				File imageFile = new File(file, result.get(i).get("annotationImage").toString());
+
+				result.get(i).put("annotationImage",imageFile);
+			}
+		}
+		//end
+		System.out.println(columnNames.split(",")[6]);
+		String[] lst={"BookName","studentName","bookContentOfAnnotation","annotationContent","annotationImage","page","creationTime"};
+
+		ExportExcelUtil.exportExcel(result, cmListCopy, "批注统计表", columnNames.split(","), lst);
+	}
+	
+	
+	
+	//导出选中的学生名单
+	public void exportStudentExcel() {
+		String hql;
+		List<Map<String, Object>> result = null;
+		User user = SystemContext.getCurrentUser();
+		DefaultDBCache.init();
+		//使用学生id作为查询条件
+		hql = "select studentName as studentName, studentCode as studentCode, studentGender as studentGender, className as className from studentInClassOrNot where studentId in("+studentIds+")";
+		result = excelService.find(hql, this.getFilter()); 
+
+		ColumnModelCacheImpl columnModelCache = (ColumnModelCacheImpl) DefaultDBCache.getCacheStore(ColumnModelCacheImpl.CACHE_NAME);
+		columnModelCache.init();
+		
+		String propertyNames="studentName,studentCode,studentGender,className";
+		List<ColumnModel> cmList = columnModelCache.getColumnModelList(studentInClassOrNot.TABLE_CODE, propertyNames.split(","));
+		System.out.println("cmList:"+cmList);
+		System.out.println("cmListLength:"+cmList.size());
+		System.out.println("getPropertyNames:"+propertyNames.toString());
+		//start 
+		List<ColumnModel> cmListCopy = new ArrayList<ColumnModel>();
+		for(int i = 0;i < cmList.size();i++){
+			cmListCopy.add(cmList.get(i));
+		}
+				
+		//end
+		String[] lst={"studentName","studentCode","studentGender","className"};
+		String columnNames = "姓名,账号,性别,班级名";
+		System.out.println("columnNames:"+columnNames);
+		System.out.println("cmListCopyLength:"+cmListCopy.size());
+		ExportExcelUtil.exportExcel(result, cmListCopy, "学生名单表", columnNames.split(","), lst);
+	}
+	
+	
+	public Integer getAnnotationId() {
+		return annotationId;
+	}
+
+	public void setAnnotationId(Integer annotationId) {
+		this.annotationId = annotationId;
+	}
+
+	public Integer getBookId() {
+		return bookId;
+	}
+
+	public void setBookId(Integer bookId) {
+		this.bookId = bookId;
+	}
+
+	public String getAnnotationIds() {
+		return annotationIds;
+	}
+
+	public void setAnnotationIds(String annotationIds) {
+		this.annotationIds = annotationIds;
+	}
+
+	public Integer getClassId() {
+		return classId;
+	}
+
+	public void setClassId(Integer classId) {
+		this.classId = classId;
+	}
+
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
+	public String getColumnNames() {
+		return columnNames;
+	}
+
+	public void setColumnNames(String columnNames) {
+		this.columnNames = columnNames;
+	}
+
+	public String getPropertyNames() {
+		return propertyNames;
+	}
+
+	public void setPropertyNames(String propertyNames) {
+		this.propertyNames = propertyNames;
+	}
+
+	public String getStudentIds() {
+		return studentIds;
+	}
+
+	public void setStudentIds(String studentIds) {
+		this.studentIds = studentIds;
+	}
+	
+	
+}

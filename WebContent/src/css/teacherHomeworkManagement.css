@@ -1,0 +1,20 @@
+.modal-classList {
+  display: flex;
+  flex-wrap: wrap;
+}
+.modal-classList-item {
+  padding: 10px;
+  margin: 10px;
+  border: 1px solid;
+  border-radius: 5px;
+}
+.modal-classList-item:hover {
+  color: #4585f5;
+  border-color: #4585f5;
+  cursor: pointer;
+}
+.modal-classList-item.selected {
+  color: #fff;
+  border-color: #4585f5;
+  background-color: #4585f5;
+}

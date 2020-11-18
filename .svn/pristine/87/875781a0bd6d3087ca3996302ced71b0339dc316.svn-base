@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+<link rel="stylesheet" type="text/css" href="Login.css" />
+<script type="text/javascript">
+        function onbodyKeyDown(event){
+            event=event?event:window.event;
+            if(event.keyCode==13){
+                document.getElementById("loginForm").submit();
+            }
+        }
+    </script>
+</head>
+<body onkeydown="onbodyKeyDown(event)">
+	<div class="login">
+		<h1>批注系统登陆</h1>
+		<form action="j_spring_security_check" method="post">
+			<input type="text" required="required" placeholder="用户名"
+				name="j_username" /> <input type="password" required="required"
+				placeholder="密码" name="j_password" />
+			<button class="but" type="submit">登录</button>
+		</form>
+	</div>
+</body>
+</html>

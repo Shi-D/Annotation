@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+	"http://struts.apache.org/dtds/struts-2.1.dtd" >
+<struts>
+	<package name="statistics" extends="default-package" namespace="/statistics">
+		
+		<!--总的阅读人数 -->
+		<action name="readerTotal" class="com.annotation.action.statistics.StatisticsAction" method="readerTotal">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--人均阅读本数 -->
+		<action name="aveReaderTotal" class="com.annotation.action.statistics.StatisticsAction" method="aveReaderTotal">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--评论最多的学生 -->
+		<action name="mostCommentStudent" class="com.annotation.action.statistics.StatisticsAction" method="mostCommentStudent">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--批注赞最多的学生 -->
+		<action name="mostAnnotationLikeStudent" class="com.annotation.action.statistics.StatisticsAction" method="mostAnnotationLikeStudent">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		 
+		<!--注解的总数 -->
+		<action name="annotationTotal" class="com.annotation.action.statistics.StatisticsAction" method="annotationTotal">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--注解的总字数 -->
+		<action name="annotationWordsNum" class="com.annotation.action.statistics.StatisticsAction" method="annotationWordsNum">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--批注的最多的学生-->
+		<action name="mostAnnotationStudent" class="com.annotation.action.statistics.StatisticsAction" method="mostAnnotationStudent">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--批注的最多的书-->
+		<action name="mostAnnotationBook" class="com.annotation.action.statistics.StatisticsAction" method="mostAnnotationBook">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--评论总数-->
+		<action name="commentTotal" class="com.annotation.action.statistics.StatisticsAction" method="commentTotal">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--评论最多的批注-->
+		<action name="mostCommentAnnotation" class="com.annotation.action.statistics.StatisticsAction" method="mostCommentAnnotation">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+	
+			<!--总批注统计-->
+		<action name="allStatistics" class="com.annotation.action.statistics.StatisticsAction" method="allStatistics">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+	</package>    
+
+</struts> 

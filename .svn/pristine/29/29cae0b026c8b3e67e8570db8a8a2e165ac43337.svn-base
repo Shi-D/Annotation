@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Login</title>
+	<link rel="stylesheet" type="text/css" href="Login.css"/>
+</head>
+<body>
+<div class="login">
+	<h1>智慧阅读平台</h1>
+	<form action="j_spring_security_check" method="post">
+		<input type="text" required="required" placeholder="用户名" name="j_username"/>
+		<input type="password" required="required" placeholder="密码" name="j_password"/>
+		<button class="btn" type="submit">登录</button>
+		<p>本系统不支持IE浏览器,推荐使用较新浏览器,例如 Chrome, Firefox 或者 Edge</p>
+		<p>Annotation_READING</p>
+	</form>
+</div>
+</body>
+</html>

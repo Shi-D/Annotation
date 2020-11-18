@@ -1,0 +1,27 @@
+<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ page import="java.util.Date"%>
+<%@ page import="com.framework.common.SystemContext"%>
+<%@ page import="com.framework.authority.entity.User"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Login</title>
+	<link rel="stylesheet" type="text/css" href="Login.css" />
+</head>
+<body>
+	<div class="login">
+		<h1>智慧阅读平台</h1>
+		<form action="j_spring_security_check" method="post">
+			<input type="text" required="required" placeholder="用户名"
+				name="j_username" /> <input type="password" required="required"
+				placeholder="密码" name="j_password" />
+			<button class="btn" type="submit">登录</button>
+			<p>本系统不支持IE浏览器,推荐使用较新浏览器,例如Chrome,火狐或者Edge</p>
+			<p>Annotation_READING</p>
+		</form>
+	</div>
+</body>
+</html>

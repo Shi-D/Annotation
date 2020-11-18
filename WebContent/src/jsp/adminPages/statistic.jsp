@@ -1,0 +1,52 @@
+<%@ page import="java.util.Date"%>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="com.framework.common.SystemContext"%>
+<%@ page import="com.framework.authority.entity.User"%>
+<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%ArrayList<Integer> type = new ArrayList<Integer>();type.add(TYPE_ADMIN); %>
+<%@include file = "../../../common/commonRedirect.jsp" %>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<title>统计信息</title>
+	<script>
+        // 公共模块
+        const modelUrls = {
+            'link': [
+                '../../css/teacherPage.css',
+                '../../css/adminStatistic.css',
+            ],
+            'script': [
+                '../../js/action.js',
+                '../../js/preprocessor.js',
+                '../../js/table.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js',
+                '../../js/adminPages/statistic.js',
+            ],
+        };
+	</script>
+	<script src="../../js/settings.js"></script>
+</head>
+<body>
+<div class="main">
+	<div class="sider"></div>
+	<div class="main-body">
+		<div class="main-body-header"></div>
+		<div class="main-body-content">
+			<div class="table-part" id="table-part">
+				<canvas class="carditem" id="myChart-1" width="1180" height="330"></canvas>
+				<div>
+					<canvas class="carditem" id="myChart-2" width="570" height="170"></canvas>
+					<canvas class="carditem" id="myChart-3" width="570" height="170"></canvas>
+				</div>
+				<div class="carditem" id="card-4"></div>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

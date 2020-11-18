@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+	"http://struts.apache.org/dtds/struts-2.1.dtd" >
+<struts>
+	<package name="books" extends="default-package" namespace="/books">
+		<!--显示书籍 -->
+		<action name="booksList" class="com.annotation.action.books.booksAction" method="booksList">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--显示书籍列表（非分页式） -->
+		<action name="allBooksList" class="com.annotation.action.books.booksAction" method="allBooksList">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--书架管理：显示书籍列表（非分页式） -->
+		<action name="bookshelfManagement" class="com.annotation.action.books.booksAction" method="bookshelfManagement">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--获取有书籍的班级列表 -->
+		<action name="classesHaveBook" class="com.annotation.action.books.booksAction" method="classesHaveBook">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--书籍内容显示 -->
+		<action name="booksContent" class="com.annotation.action.books.booksAction" method="booksContent">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+	
+		<!--显示班中书籍 -->
+		<action name="queryClassBookInfo" class="com.annotation.action.books.booksAction" method="queryClassBookInfo">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+			
+		<!--推送书籍 -->
+        <action name="pushBooksToClass" class="com.annotation.action.books.booksAction" method="pushBooksToClass">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!--推送书籍（根据书名显示不在班级书架的书籍） -->
+        <action name="queryBookNotInClassByName" class="com.annotation.action.books.booksAction" method="queryBookNotInClassByName">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!--推送书籍（显示不在班级书架的书籍） -->
+        <action name="queryBookNotInClass" class="com.annotation.action.books.booksAction" method="queryBookNotInClass">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>	
+		<!--移除书籍（显示在班级书架的书籍） -->
+        <action name="queryBookInClass" class="com.annotation.action.books.booksAction" method="queryBookInClass">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!--显示未推送给某学生的书籍 -->
+        <action name="queryBookNotInStudent" class="com.annotation.action.books.booksAction" method="queryBookNotInStudent">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!--推送给某学生书籍 -->
+        <action name="pushBooksToStudent" class="com.annotation.action.books.booksAction" method="pushBooksToStudent">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+    	<!--移除书籍 -->
+        <action name="removeBooksFromClass" class="com.annotation.action.books.booksAction" method="removeBooksFromClass">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>	
+		<!--学生个人已有的书 -->
+        <action name="queryBookInStudent" class="com.annotation.action.books.booksAction" method="queryBookInStudent">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!--移除书籍与学生的绑定 -->
+        <action name="removeBooksFromStudent" class="com.annotation.action.books.booksAction" method="removeBooksFromStudent">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>	
+		<!--删除书籍 -->
+        <action name="deleteBook" class="com.annotation.action.books.booksAction" method="deleteBook">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!-- 添加书籍 -->
+		<action name="addBook" class="com.annotation.action.books.booksAction" method="addBook">
+			<result name="result>json" type="json">
+				<param name="root">
+					results
+				</param>
+			</result>
+		</action>
+	</package>
+</struts> 

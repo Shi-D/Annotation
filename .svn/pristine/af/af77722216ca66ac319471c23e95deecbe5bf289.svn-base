@@ -1,0 +1,81 @@
+<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ page import="java.util.Date"%>
+<%@ page import="com.framework.common.SystemContext"%>
+<%@ page import="com.framework.authority.entity.User"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Login</title>
+	<link rel="stylesheet" href="resources/lib/font-awesome.css">
+	<link rel="stylesheet" href="resources/lib/bootstrap.min.css">
+	<link rel="stylesheet" href="resources/slideVerify/slideVerify.css">  
+	<link rel="stylesheet" type="text/css" href="Login.css" />
+	<style>
+		#loginCard{left:100px;visibility:hidden;position:fixed;z-index:100;}
+		#cancelToVerify{color:#aaaaaa;font-size:25px;display:relative;right:0px;}
+	</style>
+</head>
+<body>
+<div class="card" id="loginCard" style="width:350px">
+  <div class="card-body">
+	<span id="cancelToVerify"><i class="fa fa-times-circle-o"></i></span>
+	<br>
+    <div class="container" id="verifyContainer">
+		<div id="captcha" style="position:relative"></div>
+		<div id="msg"></div>
+	</div>
+  </div>
+</div>
+	<div class="login">
+		<h1>智慧阅读平台</h1>
+		<form action="j_spring_security_check" id="loginForm" method="post">
+			<input type="text" required="required" placeholder="用户名"
+				name="j_username" /> 
+			<input type="password" required="required"
+				placeholder="密码" name="j_password" />
+			<button class="btn" type="submit" id="login" onclick="return func()">登录</button>
+			<p>本系统不支持IE浏览器,推荐使用较新浏览器,例如Chrome或FireFox</p>
+			<p>Annotation_READING</p>
+		</form>
+	</div>
+</body>
+
+<script src="resources/lib/jquery-3.4.0.js"></script>
+<script>
+function getRandomNumberByRange(start, end) {
+    return Math.round(Math.random() * (end - start) + start)
+}
+function getRandomImg() {
+    return "resources/slideVerify/img/" + getRandomNumberByRange(0, 6) + ".png"
+}
+</script>
+<script src="resources/slideVerify/slideVerify.js"></script>
+<script>
+jigsaw.init(document.getElementById('captcha'), function () {});
+
+var X = $('#login').offset().top;//元素在当前视窗距离顶部的位置
+var Y = $('#login').offset().left;
+console.log(X,Y);
+$("#loginCard").css("top",(X-155)+"px");
+$("#loginCard").css("left",(Y+150)+"px");
+
+$("#cancelToVerify").click(function(){
+	$(".card").css("visibility","hidden");
+})
+$("input").click(function(){
+	$("#cancelToVerify").click();
+})
+
+</script>
+<script>
+function func(){
+	$("#loginCard").css("visibility","visible");
+	
+	return false;
+}
+</script>
+</html>
+

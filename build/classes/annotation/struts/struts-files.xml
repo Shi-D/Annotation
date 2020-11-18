@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+	"http://struts.apache.org/dtds/struts-2.1.dtd" >
+<struts>
+	<package name="files" extends="default-package" namespace="/files">
+	<!-- 上传 -->
+        <action name="uploadAction" class="com.annotation.action.File.uploadAction">
+            <!-- 显示成功的jsp页面 -->
+            <result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+            
+            <!-- 文件上传拦截器，限制运行上传的文件的类型，还有其他一个方法，这是其中一个 -->
+               <interceptor-ref name="defaultStack">
+                   <!-- 限制运行的文件的扩展名 fileUpload.allowedExtensions固定写法-->
+                   <param name="fileUpload.allowedExtensions">txt,jpg,gif,png</param>
+               </interceptor-ref> 
+           
+            
+            <!-- 错误提示，档文件上传出现错误的时候，struts内部会返回input视图，
+                错误视图，所以就需要我们在struts.xml中配置Input视图对应的错误页面 -->
+            <result name="input"></result>
+        
+        </action>
+		
+		<!-- 下载的action -->
+        <action name="down" class="com.annotation.action.File.DownAction" method="list">
+            <result name="list">/list.jsp</result>
+           
+             <!-- 下载操作 -->
+            <result name="download" type="stream">
+               <!-- 允许下载的文件的类型：指定为所有的二进制的文件类型，去tomcat的wen.xml里面搜索.exe -->    
+               <param name="contentType">application/octet-stream</param>
+               <!-- 对应的就是Action种的属性，返回流的属性-->
+               <param name="inputName">attrInputStream</param>
+               <!-- 下载头，包括：浏览器显示的文件名 -->
+               <param name="contentDisposition">attachment;filename="${downFileName}"</param>
+               <!-- 缓冲区大小设置 -->
+               <param name="bufferSize">1024</param>          
+            </result>
+            
+        </action>
+	</package>
+	
+        
+        
+ 
+</struts> 

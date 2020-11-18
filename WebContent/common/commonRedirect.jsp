@@ -1,0 +1,37 @@
+<%@ taglib uri="/struts-tags" prefix="s"%>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec"%>
+<%@ page import="com.framework.common.SystemContext"%>
+<%@ page import="com.framework.authority.entity.User"%>
+<%@ page import="javax.servlet.http.*" %>
+<%@ page import="java.io.PrintWriter" %>
+<%! int TYPE_SUPERADMIN = 0;%>
+<%! int TYPE_ADMIN = 0;%>
+<%! int TYPE_TEACHER = 1;%>
+<%! int TYPE_STUDENT = 2;%>
+<%
+	//清除缓存
+	response.setHeader("Pragma","No-cache"); 
+	response.setHeader("Cache-Control","No-cache"); 
+	response.setDateHeader("Expires", -1); 
+	response.setHeader("Cache-Control", "No-store");
+
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+	User user = SystemContext.getCurrentUser();
+	String URL = "http://115.231.108.197/Annotation/login.jsp";
+	//String URL = "http://172.22.203.48:8080/Annotation/login.jsp";
+	//String URL = "http://127.0.0.1:8080/Annotation/login.jsp";
+	if (user != null) {
+		if(!type.contains(user.getUserType())){
+			PrintWriter outs = response.getWriter();
+			outs.println("ACCESS DENIED!");
+			return ;
+		}
+		session.setAttribute("name", user.getUsername());
+		session.setAttribute("type", user.getUserType());
+	}else{
+		response.sendRedirect(URL);
+		return;
+	}
+%>
+

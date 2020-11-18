@@ -1,0 +1,210 @@
+package com.annotation.service;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
+import org.springframework.stereotype.Service;
+
+import com.annotation.entity.Books;
+import com.framework.authority.entity.User;
+import com.framework.common.EncodingDetect;
+import com.framework.common.ResultPostModel;
+import com.framework.common.SystemContext;
+import com.framework.constants.AnnotationConstants;
+import com.framework.system.common.base.service.impl.BaseServiceImpl;
+
+@Service
+public class booksService extends BaseServiceImpl<Books> {
+	private String DEFAULTAVATARNAME = "20190428DEFAULTAVATAR.png";
+	public void pushBooksToClass(Integer classId, String[] bookId)
+			throws Exception {
+		int len = bookId.length;
+		String sql = "";
+		for (int i = 0; i < len; i++) {
+			System.out.println(bookId[i]);
+			sql = "insert into BOOK_CLASS ( CLASS_ID,BOOK_ID ) values ("
+					+ classId + "," + bookId[i] + ")";
+			System.out.println(sql);
+			this.executeSQLUpdate(sql);
+		}
+	}
+
+	public List<Map<String, Object>> queryBookNotInClass(
+			Integer organizationId, Integer classId) {
+		String hql = "select distinct bookName as bookName, bookId as bookId, bookAuthor as bookAuthor from Books where bookId not in (select bookId as bookId from TeacherClassBooks where classId =?) and organizationId = ?";
+		return this.getResultByHQL(hql, classId, organizationId);
+	}
+
+	public List<Map<String, Object>> queryBookInClass(Integer organizationId,
+			Integer classId) {
+		String hql = "select distinct bookName as bookName, bookId as bookId, bookAuthor as bookAuthor from TeacherClassBooks where organizationId = ? and classId =?";
+		return this.getResultByHQL(hql, organizationId, classId);
+	}
+
+	public void pushBooksToStudent(Integer studentId, String[] bookId)
+			throws Exception {
+		int len = bookId.length;
+		String hql = "";
+		for (int i = 0; i < len; i++) {
+			System.out.println(bookId[i]);
+			hql = "insert into BOOK_STUDENT ( STUDENT_ID,BOOK_ID ) values ("
+					+ studentId + "," + bookId[i] + ")";
+			System.out.println(hql);
+			this.executeSQLUpdate(hql);
+		}
+	}
+
+	public List<Map<String, Object>> queryBookNotInStudent(Integer studentId) {
+		String hql = "select distinct bookId as bookId, "
+				+ "bookName as bookName, "
+				+ "bookAuthor as bookAuthor from Books where bookId not in "
+				+ "(select bookId as bookId from StudentBookView where studentId = ?)";
+		List<Map<String, Object>> result = this.getResultByHQL(hql, studentId);
+		System.out.println("***1*****" + result);
+		if (result.size() != 0)
+			return result;
+		else {
+			hql = "select bookId as bookId, " + "bookName as bookName, "
+					+ "bookAuthor as bookAuthor from Books";
+			System.out.println("***2*****" + hql);
+			return this.getResultByHQL(hql);
+		}
+	}
+
+	public List<Map<String, Object>> queryBookInStudent(Integer studentId) {
+		String hql = "select bookId as bookId, "
+				+ "bookName as bookName from StudentBookView where studentId = ?";
+		return this.getResultByHQL(hql, studentId);
+	}
+
+	// 删除书籍
+	public List<Map<String, Object>> deleteBookService(String bookIds) {
+		List<Map<String, Object>> temp;
+		User user = SystemContext.getCurrentUser();
+		String hql;
+		try {
+			if (user.getUserType() == 0) {
+				hql = "delete from Books where bookId in(" + bookIds + ")";
+			} else if (user.getUserType() == 1) {
+				hql = "delete from Books where teacherCode = "
+						+ user.getUserCode() + " and bookId in(" + bookIds
+						+ ")";
+			} else {
+				hql = "";
+			}
+			this.executeHQLUpdate(hql);
+			this.deleteComment(bookIds);
+			this.deleteAnnotation(bookIds);
+			this.deletePage(bookIds);
+			temp = new ResultPostModel("result", true).getResult();
+		} catch (Exception e) {
+			temp = new ResultPostModel("result", false).getResult();
+		}
+		return temp;
+	}
+
+	// 删除annotation 删除书籍的时候也要删除注释
+	public void deleteAnnotation(String bookIds) {
+		String sql = "DELETE FROM ANNOTATION WHERE BOOK_ID IN (" + bookIds
+				+ ")";
+		this.executeSQLUpdate(sql);
+	}
+
+	// 删除page 删除书籍时page也要删除
+	public void deletePage(String bookIds) {
+		String sql = "DELETE FROM PAGE WHERE BOOK_ID IN (" + bookIds + ")";
+		this.executeSQLUpdate(sql);
+	}
+
+	// 删除comment 删除书籍时要删除
+	public void deleteComment(String bookIds) {
+		String sql = "DELETE FROM COMMENT WHERE ANNOTATION_ID IN (SELECT ANNOTATION_ID FROM ANNOTATION WHERE BOOK_ID IN ("
+				+ bookIds + "))";
+		this.executeSQLUpdate(sql);
+	}
+
+	public void addBookService(String bookName, String bookAuthor, String text,
+			String bookIntro, String bookCover, Integer bookPage,
+			String teaCode, String teaName, Integer organizationId) {
+		String sql = "insert into Book (BOOK_NAME,BOOK_AUTHOR,BOOK_CONTENT,BOOK_INTRODUCTION,BOOK_COVER,BOOK_PAGE,TEACHER_CODE,TEACHER_NAME,ORGANIZATION_ID)"
+				+ " values ('"
+				+ bookName
+				+ "','"
+				+ bookAuthor
+				+ "','"
+				+ text
+				+ "','"
+				+ bookIntro
+				+ "','"
+				+ bookCover
+				+ "','"
+				+ bookPage
+				+ "','" + teaCode + "','" + teaName +"','" + organizationId + "')";
+		this.executeSQLUpdate(sql);
+	}
+
+	/*
+	 * 书籍列表显示 public String list() { User currentUser =
+	 * SystemContext.getCurrentUser();
+	 * System.out.println(currentUser.getOrganization().getId()); results =
+	 * userService.queryUsersInfoByAdmin(currentUser.getOrganization().getId());
+	 * return "result>json"; }
+	 */
+
+	public Integer updateBookCoverService(Integer bookId, String photoName) {
+		String sql = "UPDATE BOOK SET BOOK_COVER = '" + photoName
+				+ "' WHERE BOOK_ID = " + bookId;
+		return this.executeSQLUpdate(sql);
+	}
+
+	// 增加书籍(老师上传书籍) avatar.getName()要改 这是temp文件名 需要前端给我文件名
+	public List<Map<String, Object>> addBookService(File avatar, File bookFile,
+			String avatarName,String bookFileName, String bookName, String author,
+			String Introduction, Integer page) {
+		long t = new Date().getTime();
+		User user = SystemContext.getCurrentUser();
+		List<Map<String, Object>> temp;
+		try {
+			String encode = EncodingDetect.getJavaEncode(bookFile);
+			FileInputStream fileInputStream = new FileInputStream(bookFile);
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			byte[] buffer = new byte[2048];
+			int len = 0;
+			while ((len = fileInputStream.read(buffer)) != -1) {
+				outputStream.write(buffer, 0, len);
+			}
+			byte[] data = outputStream.toByteArray();
+			fileInputStream.close();
+			if(avatar == null){
+				avatar = new File(AnnotationConstants.UPLOAD_URL + "Pic/"+DEFAULTAVATARNAME);
+				avatarName = DEFAULTAVATARNAME;
+			}
+			this.addBookService(bookName, author, new String(data,encode),
+					Introduction, t + avatarName, page, user.getUserCode(),
+					user.getUserName(), user.getOrganization().getId());
+			FileUtils.copyFile(avatar, new File(new File(
+					AnnotationConstants.UPLOAD_URL + "Pic/"),t+avatarName));
+			FileUtils.copyFile(bookFile, new File(new File(
+					AnnotationConstants.UPLOAD_URL + "Text/"), bookFileName));
+
+			temp = new ResultPostModel("result", true).getResult();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println(e);
+			temp = new ResultPostModel("result", false).getResult();
+		}
+		return temp;
+	}
+
+	// 传递书籍（所有内容）
+	public List<Map<String, Object>> bookContentService(Integer bookId) {
+		String hql = "select books.bookContent  as bookContent from Books books where books.bookId="
+				+ bookId;
+		return this.getResultByHQL(hql);
+	}
+}

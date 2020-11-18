@@ -1,0 +1,17 @@
+<%@ taglib uri="/struts-tags" prefix="s"%>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec"%>
+<%@ page import="com.framework.common.SystemContext"%>
+<%@ page import="com.framework.authority.entity.User"%>
+<%@ page import="javax.servlet.http.*" %>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+	User user = SystemContext.getCurrentUser();
+	String URL = "http://115.231.108.197/Annotation/login.jsp";
+	//String URL = "http://172.22.203.48:8080/Annotation/login.jsp";
+	if (user == null){
+		response.sendRedirect(URL);
+		return;
+	}
+%>
+

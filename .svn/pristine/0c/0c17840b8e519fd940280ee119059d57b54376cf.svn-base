@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+	"http://struts.apache.org/dtds/struts-2.1.dtd" >
+<struts>
+	<package name="organization" extends="default-package" namespace="/organization">
+	
+		<!--添加机构-->
+		<action name="addOrganization" class="com.annotation.action.organization.OrganizationAction" method="addOrganization">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--删除机构-->
+		<action name="deleteOrganization" class="com.annotation.action.organization.OrganizationAction" method="deleteOrganization">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--机构列表-->
+		<action name="organizationList" class="com.annotation.action.organization.OrganizationAction" method="organizationList">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+
+		<!--管理员列表-->
+		<action name="adminList" class="com.annotation.action.organization.OrganizationAction" method="adminList">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+
+		<!--新增管理员-->
+		<action name="addAdmin" class="com.annotation.action.organization.OrganizationAction" method="addAdmin">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--删除管理员-->
+		<action name="deleteAdmin" class="com.annotation.action.organization.OrganizationAction" method="deleteAdmin">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--为机构添加管理员-->
+		<action name="addAdminToOrganization" class="com.annotation.action.organization.OrganizationAction" method="addAdminToOrganization">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--从机构移除管理员-->
+		<action name="removeAdminFromOrganization" class="com.annotation.action.organization.OrganizationAction" method="removeAdminFromOrganization">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+	</package>
+</struts> 

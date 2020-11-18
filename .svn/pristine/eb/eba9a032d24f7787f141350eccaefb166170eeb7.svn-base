@@ -1,0 +1,97 @@
+@import "_global";
+@import "_variable";
+@import "_header";
+
+.main {
+	padding: 50px 0;
+	background-color: #f8f9f9;
+}
+
+.readed {
+	display: flex;
+	flex-wrap: wrap;
+	position: relative;
+	min-height: 380px;
+	background-color: #fff;
+	padding: 50px 10% 20px 10%;
+
+}
+
+.book-card {
+	padding: 40px 50px 0 50px;
+	width: 235px;
+
+	img {
+		display: block;
+		height: 200px;
+		width: 135px;
+	}
+
+	.book-name {
+		margin-top: 10px;
+		font-weight: bold;
+	}
+
+	reading-process {
+		margin-top: 5px;
+	}
+
+	.book-avatar {
+		box-shadow: 2px 2px 12px #a6a6a6;
+	}
+}
+
+.no-book-avatar {
+	width: 135px;
+	height: 200px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	padding: 40px 0 10px 0;
+	color: #fff;
+	cursor: pointer;
+}
+
+.title {
+	position: absolute;
+	top: 0;
+	padding: 10px 20px;
+	background-color: #03a9f4;
+	color: #fff;
+	border-radius: 0 0 5px 5px;
+}
+
+.book-list {
+	display: flex;
+	flex-wrap: wrap;
+	clear: both;
+}
+
+.bookshelf{
+	padding: 20px 10% 20px 10%;
+	min-height: 500px;
+}
+
+.table-query{
+	margin-top: 20px;
+
+	> div{
+		display: inline-block;
+
+		&:last-child{
+			float: right;
+		}
+	}
+}
+.dropdown{
+	display: inline-block;
+	margin-right: 10px;
+
+	+ div{
+		display: inline-block;
+	}
+}
+.dropdown-item{
+	cursor: pointer;
+}

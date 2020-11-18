@@ -1,0 +1,486 @@
+package com.annotation.service;
+
+import java.io.File;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.framework.authority.entity.User;
+import com.framework.common.ResultPostModel;
+import com.framework.common.SystemContext;
+import com.framework.constants.AnnotationConstants;
+import com.framework.system.common.base.service.impl.BaseServiceImpl;
+import com.framework.utils.URLUtils;
+import com.annotation.entity.Homework;
+
+@Service
+public class HomeworkService extends BaseServiceImpl<Homework> {
+	@Autowired
+	ClassesService classesService;
+
+	public Integer addHomeworkService(String homeworkName, Date deadline,
+			String homeworkContent, String sourceLink, Integer userId) {
+		Homework homework = new Homework();
+		homework.setHomeworkName(homeworkName);
+		homework.setCreationTime(new Date());
+		homework.setHomeworkContent(homeworkContent);
+		homework.setDeadline(deadline);
+		if (sourceLink != null)
+			homework.setSourceLink(sourceLink);
+		else
+			homework.setSourceLink(null);
+		homework.setUserId(userId);
+		this.save(homework);
+		return homework.getHomeworkId();
+	}
+
+	public String queryHomeworkInClass(String classIds) {
+		if (classIds == null)
+			return null;
+		String sql = "SELECT HOMEWORK_ID as homeworkId FROM ANNOTATION_HOMEWORK_CLASS WHERE CLASS_ID IN( "
+				+ classIds + " )";
+		List<Map<String, Object>> homeworkClass = this.getResultBySQL(sql);
+		int len = homeworkClass.size();
+		if (len == 0)
+			return null;
+
+		String homeworkIds = homeworkClass.get(0).get("homeworkId").toString();
+		for (int i = 1; i < len; i++) {
+			homeworkIds += ",";
+			homeworkIds += homeworkClass.get(i).get("homeworkId");
+		}
+
+		return homeworkIds;
+	}
+
+	public List<Map<String, Object>> queryScoreAndEvaluation(String homeworkId,
+			String userId) {
+		String sql = "SELECT EVALUATION as evaluation, SCORE as score FROM ANNOTATION_HOMEWORK_STUDENT WHERE HOMEWORK_ID =? AND USER_ID =?";
+		List<Map<String, Object>> scoreAndEvaluation = this.getResultBySQL(sql,
+				homeworkId, userId);
+		int len = scoreAndEvaluation.size();
+		if (len == 0)
+			return null;
+		return scoreAndEvaluation;
+	}
+
+	public void publishHomeworkInClass(Integer homeworkId, String classIds) {
+		String[] classId = classIds.split(",");
+		int len = classId.length;
+		String sql = "";
+		for (int i = 0; i < len; i++) {
+			sql = "insert into ANNOTATION_HOMEWORK_CLASS ( HOMEWORK_ID,CLASS_ID ) values ("
+					+ homeworkId + "," + classId[i] + ")";
+			this.executeSQLUpdate(sql);
+		}
+	}
+	
+	@SuppressWarnings("unused")
+	public void updateHomeworkInClass(Integer homeworkId, String classIds) {
+		String[] classId = classIds.split(",");
+		int len = classId.length;
+		String sql = "";
+		sql="DELETE FROM ANNOTATION_HOMEWORK_CLASS WHERE HOMEWORK_ID ="+ homeworkId;
+		this.executeSQLUpdate(sql);
+		System.out.println("classids"+classIds);
+		String classes=" CLASS_ID = "+classId[0];
+		if(!classIds.equals("")){
+			for (int i = 0; i < len; i++) {
+				sql = "insert into ANNOTATION_HOMEWORK_CLASS ( HOMEWORK_ID,CLASS_ID ) values ("
+						+ homeworkId + "," + classId[i] + ")";
+				this.executeSQLUpdate(sql);
+				classes+=" OR CLASS_ID = "+classId[i];
+			}
+		}
+		if(!classIds.equals("")){
+			sql="DELETE FROM ANNOTATION_HOMEWORK_STUDENT WHERE HOMEWORK_ID ="+ homeworkId +" AND USER_ID NOT IN (SELECT STUDENT_ID FROM CLASS_STUDENT WHERE "+classes+")";
+			this.executeSQLUpdate(sql);
+		}else{
+			sql="DELETE FROM ANNOTATION_HOMEWORK_STUDENT WHERE HOMEWORK_ID ="+ homeworkId ;
+			this.executeSQLUpdate(sql);
+		}
+	}
+
+	// 暂时无效
+	public List<Map<String, Object>> querySubmitedHomework(Integer homeworkId) {
+		String sql = "SELECT USER_ID as userId, USER_NAME as userName,HOMEWORK_ID as homeworkId, SOURCE_LINK as sourceLink, CREATION_TIME as creationTime, USER_NAME as userName, EVALUATION as evaluation, SCORE as score FROM HOMEWORK_STUDENT_VIEW WHERE HOMEWORK_ID ="
+				+ homeworkId + " ORDER BY CREATION_TIME DESC";
+		return this.getResultBySQL(sql);
+	}
+
+	public Integer countStudentsByHomework(Integer homeworkId) {
+		String sql = "SELECT SUM(STUDENT_NUMBER) AS studentNumber FROM HOMEWORK_TEACHER_CLASS_VIEW WHERE HOMEWORK_ID = ? GROUP BY HOMEWORK_ID";
+		Object tmp = getResultBySQL(sql, homeworkId).get(0)
+				.get("studentNumber");
+		if (tmp == null)
+			return 0;
+		return Integer.valueOf(tmp.toString());
+	}
+
+	// 删除ANNOTATION_HOMEWORK表中的数据
+	public void deleteHomework(String homeworkIds) {
+		String sql = "DELETE FROM ANNOTATION_HOMEWORK WHERE HOMEWORK_ID IN ("
+				+ homeworkIds + ")";
+		this.executeSQLUpdate(sql);
+		this.deleteHomeworkClass(homeworkIds);
+		this.deleteHomeworkStu(homeworkIds);
+	}
+
+	// 删除ANNOTATION_HOMEWORK_CLASS表中homework_id 为指定id的数据
+	public void deleteHomeworkClass(String homeworkIds) {
+		String sql = "DELETE FROM ANNOTATION_HOMEWORK_CLASS WHERE HOMEWORK_ID IN ("
+				+ homeworkIds + ")";
+		this.executeSQLUpdate(sql);
+	}
+
+	// 删除你notation_HomeWORK_STUDENT表中homework_id 为指定id的数据
+	public void deleteHomeworkStu(String homeworkIds) {
+		String sql = "DELETE FROM ANNOTATION_HOMEWORK_STUDENT WHERE HOMEWORK_ID IN ("
+				+ homeworkIds + ")";
+		this.executeSQLUpdate(sql);
+	}
+
+	public void updateSubmitedHomework(String userIds, Integer homeworkId,
+			String evaluation, String score) {
+		String sql = "";
+		String[] userId = userIds.split(",");
+		for (String e : userId) {
+			sql = "UPDATE ANNOTATION_HOMEWORK_STUDENT SET EVALUATION = '"
+					+ evaluation + "',SCORE = '" + score + "' WHERE USER_ID = "
+					+ e + " AND HOMEWORK_ID =" + homeworkId;
+			System.out.println(sql);
+			this.executeSQLUpdate(sql);
+		}
+	}
+
+	public void sumbitHomework(Integer userId, Integer homeworkId,
+			String sourceLink, String stuContent) {
+		String sql = "";
+		sql="SELECT * FROM ANNOTATION_HOMEWORK_STUDENT WHERE HOMEWORK_ID = " + homeworkId;
+		int count = this.getTotalCountBySQL(sql);
+		if(count<=0){
+			sql = "INSERT INTO ANNOTATION_HOMEWORK_STUDENT (USER_ID, HOMEWORK_ID, SOURCE_LINK,STUDENT_HOMEWORK) VALUES ("
+				+ userId
+				+ ","
+				+ homeworkId
+				+ ",'"
+				+ sourceLink
+				+ "','"
+				+ stuContent + "')";
+			this.executeSQLUpdate(sql);
+		}else{
+			sql = "UPDATE ANNOTATION_HOMEWORK_STUDENT SET SOURCE_LINK = ? , STUDENT_HOMEWORK = ? WHERE USER_ID = ? AND HOMEWORK_ID = ?";
+			this.executeSQLUpdate(sql, sourceLink, stuContent, userId, homeworkId);
+		}
+	}
+
+	public Boolean checkStudentHaveHoemwork(Integer studentId,
+			Integer homeworkId) {
+		String classes = classesService.queryClassesByStudentId(studentId);
+		if (classes != null) {
+			String sql = "SELECT COUNT(*) FROM HOMEWORK_TEACHER_CLASS_VIEW WHERE HOMEWORK_ID =  ? AND CLASS_ID IN  ("
+					+ classes + ")";
+			if (this.getTotalCountBySQL(sql, homeworkId) > 0)
+				return true;
+		}
+		return false;
+	}
+
+	public String getSubmitSourceLink(Integer homeworkId, Integer userId) {
+		String sql = "SELECT SOURCE_LINK as sourceLink FROM ANNOTATION_HOMEWORK_STUDENT WHERE HOMEWORK_ID =  ? AND USER_ID = ?";
+		List<Map<String, Object>> tmp = this.getResultBySQL(sql, homeworkId,
+				userId);
+		if (tmp.size() < 1)
+			return null;
+		return tmp.get(0).get("sourceLink").toString();
+	}
+
+	// 查看学生是否提交作业
+	public Integer checkSubmitStudent(String homeworkId, String userId) {
+		String sql = "SELECT COUNT(*) FROM ANNOTATION_HOMEWORK_STUDENT WHERE HOMEWORK_ID =  ? AND USER_ID = ?";
+		return this.getTotalCountBySQL(sql, homeworkId, userId);
+	}
+
+	// 老师端计算交作业的学生个数
+	public Integer countSubmitedStudentByHomework(Integer homeworkId) {
+		String sql = "SELECT COUNT(*) FROM ANNOTATION_HOMEWORK_STUDENT WHERE HOMEWORK_ID = ? GROUP BY HOMEWORK_ID";
+		if (getTotalCountBySQL(sql, homeworkId) == null)
+			return 0;
+		return this.getTotalCountBySQL(sql, homeworkId);
+	}
+
+	// 老师端查看所有自己发布的作业
+	public List<Map<String, Object>> findTeaHomework(Integer teaId) {
+		String sql = "SELECT HOMEWORK_ID AS homeworkId, HOMEWORK_NAME AS homeworkName, USER_ID,STUDENT_NUMBER, CREATION_TIME AS createtime, DEADLINE AS deadtime, CONVERT(text,CLASS_NAME) AS classesName FROM HOMEWORK_INFO WHERE USER_ID = "
+				+ teaId;
+		List<Map<String, Object>> temp = this.getResultBySQL(sql);
+		if (temp.size() == 0)
+			return null;
+		SimpleDateFormat dateFormat = new SimpleDateFormat(
+				"yyyy-MM-dd HH:mm:ss");
+		for (Map<String, Object> i : temp) {
+			i.put("createtime", dateFormat.format(i.get("createtime")));
+			i.put("deadtime", dateFormat.format(i.get("deadtime")));
+			if(i.get("STUDENT_NUMBER")!=null){
+				i.put("submitedStudents",
+					countSubmitedStudentByHomework(Integer.parseInt(i.get(
+							"homeworkId").toString()))
+							+ "/" + i.get("STUDENT_NUMBER"));
+			}else{
+				i.put("submitedStudents",
+						countSubmitedStudentByHomework(Integer.parseInt(i.get(
+								"homeworkId").toString()))
+								+ "/0");
+			}
+		}
+		return temp;
+	}
+	//根据作业id查看作业详细信息
+	public List<Map<String, Object>> getHomeworkService(Integer homeworkId) {
+		String sql = "SELECT HOMEWORK_NAME AS homeworkName, DEADLINE AS deadtime, CONVERT(text,CLASS_NAME) AS classesName, HOMEWORK_CONENT AS homeworkContent FROM HOMEWORK_INFO WHERE HOMEWORK_ID = "
+				+ homeworkId;
+		List<Map<String, Object>> temp = this.getResultBySQL(sql);
+		if (temp.size() == 0)
+			return null;
+		SimpleDateFormat dateFormat = new SimpleDateFormat(
+				"yyyy-MM-dd HH:mm:ss");
+		Homework homework;
+		for (Map<String, Object> i : temp) {
+			homework = get(Homework.class, homeworkId);
+			i.put("deadtime", dateFormat.format(i.get("deadtime")));
+			i.put("sourceLink", homework.getSourceLink());
+		}
+		return temp;
+	}
+
+	// 老师端查看作业的班级下拉框
+	public List<Map<String, Object>> teaClassDropDownBox(Integer teaId) {
+		String sql = "SELECT DISTINCT CLASS_NAME AS classesName FROM HOMEWORK_TEACHER_CLASS_VIEW WHERE STUDENT_NUMBER>0 and USER_ID ="
+				+ teaId;
+		return getResultBySQL(sql);
+
+	}
+
+	// 老师端 查看作业 根据作业id
+	public List<Map<String, Object>> findHomeworkByIdService(Integer homeworkId) {
+		String hql = "select homeworkId as homeworkId, homeworkName as homeworkName, deadline as deadtime, className as classesName from HomeworkInfo where homeworkId = "
+				+ homeworkId;
+		List<Map<String, Object>> temp = this.getResultByHQL(hql);
+		SimpleDateFormat dateFormat = new SimpleDateFormat(
+				"yyyy-MM-dd HH:mm:ss");
+		Homework homework;
+		for (Map<String, Object> i : temp) {
+			homework = get(Homework.class,
+					Integer.parseInt(i.get("homeworkId").toString()));
+			i.put("deadtime", dateFormat.format(i.get("deadtime")));
+			i.put("homeworkContent", homework.getHomeworkContent());
+			i.put("sourceLink", homework.getSourceLink());
+		}
+		return temp;
+	}
+
+	// 老师发布作业
+	public List<Map<String, Object>> addHomeworkService(String fileName,
+			File files, String homeworkName, Date deadline, String content,
+			String classIds) {
+		User user = SystemContext.getCurrentUser();
+		String my_homeworkName = new Date().getTime() + "_" + fileName;
+		List<Map<String, Object>> r;
+		try {
+			if (files != null) {
+				File file = new File(URLUtils.generateURLforHomework(user
+						.getUsername()));
+				if (!file.exists())
+					file.mkdirs();
+				FileUtils.copyFile(files,
+
+				new File(file, my_homeworkName));
+			}
+			String path=null;
+			if(fileName!=null) path=user.getUserCode() + "/homework/" + my_homeworkName;
+			publishHomeworkInClass(
+					addHomeworkService(
+							homeworkName,
+							deadline,
+							content,
+							path,
+							user.getId()), classIds);
+
+			r = new ResultPostModel("result", "添加成功").getResult();
+		} catch (Exception e) {
+			System.out.println(e);
+			r = new ResultPostModel("result", "添加失败").getResult();
+		}
+		return r;
+	}
+	
+	// 老师修改作业
+	public List<Map<String, Object>> modifyHomeworkService(Integer homeworkId, String fileName,
+			File files, String homeworkName, Date deadline, String content,
+			String classIds) {
+		User user = SystemContext.getCurrentUser();
+		String my_homeworkName = new Date().getTime() + "_" + fileName;
+		List<Map<String, Object>> r;
+		try {
+			if (files != null) {
+				File file = new File(URLUtils.generateURLforHomework(user
+						.getUsername()));
+				if (!file.exists())
+					file.mkdirs();
+				FileUtils.copyFile(files,
+				new File(file, my_homeworkName));
+			}
+			String deaddate=DateFormat.getDateTimeInstance().format(deadline);
+			String path=null;
+			if(fileName!=null){
+				path=user.getUserCode() + "/homework/" + my_homeworkName;
+				String sql="UPDATE ANNOTATION_HOMEWORK SET HOMEWORK_NAME = '"+homeworkName+"',HOMEWORK_CONENT ='"+content+"',DEADLINE = '"+deaddate+"',SOURCE_LINK = '"+path+"' WHERE HOMEWORK_ID = "+homeworkId;  
+				this.executeSQLUpdate(sql);
+			}else{
+				String sql="UPDATE ANNOTATION_HOMEWORK SET HOMEWORK_NAME = '"+homeworkName+"',HOMEWORK_CONENT ='"+content+"',DEADLINE = '"+deaddate+"' WHERE HOMEWORK_ID = "+homeworkId;    
+				this.executeSQLUpdate(sql);
+			}
+			updateHomeworkInClass(homeworkId, classIds);
+			r = new ResultPostModel("result", "修改成功").getResult();
+		} catch (Exception e) {
+			System.out.println(e);
+			r = new ResultPostModel("result", "修改失败").getResult();
+		}
+		return r;
+	}
+	
+	// 老师删除作业
+	public List<Map<String, Object>> deleteHomeworkService(String homeworkId) {
+		User user = SystemContext.getCurrentUser();
+		Homework homework = get(Homework.class, Integer.valueOf(homeworkId));
+		List<Map<String, Object>> r;
+		if (homework.getUserId().equals(user.getId())) {// 判断登陆者是否是上传者
+			if (homework.getSourceLink() != null
+					&& !homework.getSourceLink().equals("")) {
+				new File(AnnotationConstants.ABSOLUTE_URL
+						+ homework.getSourceLink()).delete(); // 如果该作业存在资源文件，则删除。
+			}
+			deleteHomework(homeworkId);
+			r = new ResultPostModel("result", "删除成功").getResult();
+		} else {
+			r = new ResultPostModel("result", "删除失败").getResult();
+		}
+		return r;
+	}
+
+	// 老师查看已经提交的作业
+	public List<Map<String, Object>> querySubmitHomeworkService(
+			Integer homeworkId) {
+		String hql = "select userId as userId, userName as userName, creationTime as submitedTime, sourceLink as sourceLink, evaluation as evaluation, className as className, score as score,studentHomeworkContent as studentHomeworkContent from HomeworkStudentView where homeworkId = '"
+				+ homeworkId + "'";
+		List<Map<String, Object>> temp = this.getResultByHQL(hql);
+		SimpleDateFormat dateFormat = new SimpleDateFormat(
+				"yyyy-MM-dd HH:mm:ss");
+		for (Map<String, Object> i : temp) {
+			i.put("submitedTime", dateFormat.format(i.get("submitedTime")));
+			i.put("state", (i.get("score") == null) ? "未批改" : "已批改");
+		}
+
+		return temp;
+	}
+
+	// 返回学生提交的作业
+	public List<Map<String, Object>> backSubmitStudent(String homeworkId,
+			String userId) {
+		String sql = "SELECT * FROM ANNOTATION_HOMEWORK_STUDENT WHERE HOMEWORK_ID =  ? AND USER_ID = ?";
+		List<Map<String, Object>> temp = this.getResultBySQL(sql, homeworkId,
+				userId);
+		if (temp.size() < 1)
+			return null;
+		return temp;
+	}
+
+	// 删除学生提交的作业
+	public void deleteSubmiteHomework(Integer homeworkId, Integer userId) {
+		String sql = "DELETE FROM ANNOTATION_HOMEWORK_STUDENT WHERE HOMEWORK_ID =  ? AND USER_ID = ?";
+		this.executeSQLUpdate(sql, homeworkId, userId);
+	}
+
+	// 返回给老师作业内容和学生提交的文件
+	public List<Map<String, Object>> teaCorrectWorkService(Integer stuId,
+			Integer homeworkId) {
+		String sql = "SELECT STUDENT_HOMEWORK , SOURCE_LINK FROM ANNOTATION_HOMEWORK_STUDENT WHERE HOMEWORK_ID = "
+				+ homeworkId + " AND USER_ID = " + stuId;
+		List<Map<String, Object>> temp = this.getResultBySQL(sql);
+		if (temp == null) {
+			return null;
+		}
+		return temp;
+	}
+
+	// 学生提交作业
+	public List<Map<String, Object>> submitHomeworkService(
+			String homeworkFileName, File homeworkFile, Integer homeworkId,
+			String homeworkContent) {
+		User user = SystemContext.getCurrentUser();
+		String my_fileName = new Date().getTime() + "_" + homeworkFileName;
+		List<Map<String, Object>> r;
+		try {
+			String path = "";
+			if(homeworkFile!=null){
+				File file = new File(URLUtils.generateURLforHomework(user
+						.getUsername()));
+				List<Map<String, Object>> temp = this.backSubmitStudent(
+						homeworkId.toString(), user.getId().toString());
+				if (temp != null) {
+					this.deleteSubmiteHomework(homeworkId, user.getId());
+					String source = temp.get(0).get("SOURCE_LINK").toString();
+					if (source != null && !source.equals("")) {
+						new File(AnnotationConstants.ABSOLUTE_URL + source)
+								.delete();
+					}
+				}
+				FileUtils.copyFile(homeworkFile, new File(file, my_fileName));
+				path = user.getUserCode() + "/homework/" + my_fileName;
+			}
+			
+			this.sumbitHomework(user.getId(), homeworkId, path, homeworkContent);
+			
+			r = new ResultPostModel("result", true).getResult();
+		} catch (Exception e) {
+			System.out.println(e);
+			r = new ResultPostModel("result", false).getResult();
+		}
+		return r;
+	}
+
+	// 学生查询自己的作业
+	public List<Map<String, Object>> stuSearchHomeWork(Integer stuId)
+			throws ParseException {
+		String sql = "SELECT HOMEWORK_ID AS homeworkId,TEA_ID AS userId,STU_ID AS stuId,HOMEWORK_NAME AS homeworkName,HOMEWORK_CONTENT AS homeworkContent,TEA_NAME AS teacherName,CREATION_TIME AS startTime,DEADLINE AS endTime,SOURCE_LINK AS sourceLink,EVALUATION AS evaluation,SCORE AS score,STUDENT_LINK AS submitLink,STUDENT_HOMEWORK_CONTENT AS studentHomeworkContent FROM STUDENT_HOMEWORK_VIEW WHERE STU_ID = "
+				+ stuId;
+		List<Map<String, Object>> temp = this.getResultBySQL(sql);
+		SimpleDateFormat dateFormat = new SimpleDateFormat(
+				"yyyy-MM-dd HH:mm:ss");
+		Integer Flag;
+		for (Map<String, Object> i : temp) {
+			i.put("startTime", dateFormat.format(i.get("startTime")));
+			i.put("endTime", dateFormat.format(i.get("endTime")));
+			i.put("studentLink", "account/"+i.get("submitLink"));
+			System.out.println(checkSubmitStudent(i.get("homeworkId")
+					.toString(), stuId.toString()));
+			Flag = checkSubmitStudent(i.get("homeworkId").toString(),
+					stuId.toString());
+			if (Flag > 0) {
+				i.put("status", i.get("score") == null ? "已做" : "已批改");
+			} else {
+				i.put("status", new Date().after(dateFormat.parse(i.get(
+						"endTime").toString())) ? "已过期" : "未做");
+			}
+		}
+
+		return temp;
+	}
+}

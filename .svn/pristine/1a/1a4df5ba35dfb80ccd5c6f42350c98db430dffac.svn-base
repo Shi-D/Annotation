@@ -1,0 +1,35 @@
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 30px;
+  text-align: center;
+  box-shadow: 5px 0 10px rgba(0, 0, 0, 0.3);
+}
+.userInfo-userAvatar {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+.header .img-logo {
+  height: 30px;
+  margin-right: 10px;
+}
+.main-body-header {
+  padding: 10px 30px;
+  display: flex;
+  justify-content: flex-end;
+}
+.dropdown-item {
+  cursor: pointer;
+}
+.dropdown-item.disabled {
+  color: #9e9e9e !important;
+  cursor: not-allowed;
+}

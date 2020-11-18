@@ -1,0 +1,81 @@
+* {
+  box-sizing: border-box;
+}
+.hidden {
+  display: none;
+}
+.disabled {
+  cursor: not-allowed;
+}
+button.disabled {
+  cursor: not-allowed;
+}
+a:hover {
+  text-decoration: none;
+}
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 30px;
+  text-align: center;
+  box-shadow: 5px 0 10px rgba(0, 0, 0, 0.3);
+}
+.userInfo-userAvatar {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+.header .img-logo {
+  height: 30px;
+  margin-right: 10px;
+}
+.main-body-header {
+  padding: 10px 30px;
+  display: flex;
+  justify-content: flex-end;
+}
+.dropdown-item {
+  cursor: pointer;
+}
+.dropdown-item.disabled {
+  color: #9e9e9e !important;
+  cursor: not-allowed;
+}
+.main {
+  display: flex;
+  flex-direction: column;
+  padding: 30px 20% 0 20%;
+}
+.main > div {
+  width: 500px;
+  display: inline-block;
+  margin-bottom: 50px;
+}
+.base-info-settings {
+  position: relative;
+}
+.userSettings-userAvatar {
+  position: absolute;
+  top: 100px;
+  right: -230px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.img-userSettings-userAvatar {
+  margin-bottom: 20px;
+  height: 200px;
+  width: 200px;
+  border-radius: 50%;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.15), -3px 0 10px rgba(0, 0, 0, 0.15);
+}
+textarea {
+  resize: none;
+}

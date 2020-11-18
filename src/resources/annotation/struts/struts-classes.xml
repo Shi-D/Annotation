@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+	"http://struts.apache.org/dtds/struts-2.1.dtd" >
+<struts>
+	<package name="classes" extends="default-package" namespace="/classes">
+	<!--根据教师id获取班级（非分页式）-->
+	<action name="classesByTeacherList"
+		class="com.annotation.action.classmanagement.ClassesInfoAction"
+		method="classesByTeacherList">
+		<result name="result>json" type="json">
+			<param name="root">results</param></result>
+	</action>
+	<!--删除班级(check学生数)-->
+	<action name="deleteClasses"
+		class="com.annotation.action.classmanagement.ClassesInfoAction"
+		method="deleteClasses">
+		<result name="result>json" type="json">
+			<param name="root">results</param></result>
+	</action>
+	<!--查询班级列表（非分页式）-->
+	<action name="allClassesList"
+		class="com.annotation.action.classmanagement.ClassesInfoAction"
+		method="allClassesList">
+		<result name="result>json" type="json">
+			<param name="root">results</param></result>
+	</action>
+	<!--获取有学生的班级列表 -->
+	<action name="allClassesWithoutNullStu"
+		class="com.annotation.action.classmanagement.ClassesInfoAction"
+		method="allClassesWithoutNullStu">
+		<result name="result>json" type="json">
+			<param name="root">results</param></result>
+	</action>
+	<!-- 分页查询 -->
+		<action name="searchAllInfoClasses"
+			class="com.annotation.action.classmanagement.ClassesInfoAction" method="searchAllInfoClasses">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<action name="searchAllInfoClassesByTeacher"
+			class="com.annotation.action.classmanagement.ClassesInfoAction" method="searchAllInfoClassesByTeacher">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<action name="teacherQueryClassesByClassName"
+			class="com.annotation.action.classmanagement.ClassesInfoAction" method="teacherQueryClassesByClassName">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+	<!-- 根据班级名查询所有班级 -->
+		<action name="queryAllInfoClassesByClassName"
+			class="com.annotation.action.classmanagement.ClassesInfoAction" method="queryAllInfoClassesByClassName">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>	
+	<!-- 添加班级 -->
+		<action name="addClass"
+			class="com.annotation.action.classmanagement.ClassesInfoAction" method="addClass">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+	<!-- 添加学生到班级 -->	
+		<action name="addStudentsToClass"
+			class="com.annotation.action.classmanagement.ClassesInfoAction" method="addStudentsToClass">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!-- 不在班级的学生 -->
+		<action name="queryStudentNotInClass"
+			class="com.annotation.action.classmanagement.ClassesInfoAction" method="queryStudentNotInClass">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!-- 已经在班级的学生 -->
+		<action name="queryStudentInClass"
+			class="com.annotation.action.classmanagement.ClassesInfoAction" method="queryStudentInClass">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<action name="queryStudentNotInClassByName"
+			class="com.annotation.action.classmanagement.ClassesInfoAction" method="queryStudentNotInClassByName">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+	<!-- 删除班级 -->
+		<action name="deleteClassesByClassIds"
+			class="com.annotation.action.classmanagement.ClassesInfoAction" method="deleteClassesByClassIds">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>	
+
+	</package>
+</struts> 

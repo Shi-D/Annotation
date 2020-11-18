@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd" >
+<struts>
+	<package name="user" extends="default-package" namespace="/user">
+		<!--获取用户 -->
+		<action name="searchData" class="com.framework.authority.action.UserAction" method="searchData">
+			<result name="result>json" type="json">
+				<param name="root">pager</param>
+			</result>
+		</action>
+		
+		<!--用户列表 -->
+		<action name="list" class="com.framework.authority.action.UserAction" method="list">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--学生列表 -->
+		<action name="studentList" class="com.framework.authority.action.UserAction" method="studentList">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<action name="studentListNotPage" class="com.framework.authority.action.UserAction" method="studentListNotPage">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<action name="allStudentsList" class="com.framework.authority.action.UserAction" method="allStudentsList">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!--分页查询学生列表 -->
+		<action name="queryStudentsList" class="com.framework.authority.action.UserAction" method="queryStudentsList">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		
+		<!--学生 多条件查询 -->
+		<action name="studentQuery" class="com.framework.authority.action.UserAction" method="studentQuery">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--教师列表 -->
+		<action name="teacherList" class="com.framework.authority.action.UserAction" method="teacherList">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!--教师——学生列表 -->
+		<action name="teacherStudentList" class="com.framework.authority.action.UserAction" method="teacherStudentList">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<action name="studentInClasses" class="com.framework.authority.action.UserAction" method="studentInClasses">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!--不分页教师——学生列表 -->
+		<action name="teacherStudentListNotPage" class="com.framework.authority.action.UserAction" method="teacherStudentListNotPage">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!--教师班中查找学生 -->
+		<action name="teacherFindStudentInClass" class="com.framework.authority.action.UserAction" method="teacherFindStudentInClass">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!--教师班中移除学生 -->
+		<action name="deleteStudentOfClass" class="com.framework.authority.action.UserAction" method="deleteStudentOfClass">
+			<result name="result>json" type="json">
+				<param name="root">ajaxResult</param>
+			</result>
+		</action>
+		
+		<action name="removeStudentOfClass" class="com.framework.authority.action.UserAction" method="removeStudentOfClass">
+			<result name="result>json" type="json">
+				<param name="root">ajaxResult</param>
+			</result>
+		</action>
+		
+		<!--教师 多条件查询 -->
+		<action name="teacherQuery" class="com.framework.authority.action.UserAction" method="teacherQuery">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+
+		<!--添加用户 -->
+		<action name="addUser" class="com.framework.authority.action.UserAction" method="addUser">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+
+		<!--添加用户 -->
+		<action name="addUserTea" class="com.framework.authority.action.UserAction" method="addUserTea">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!-- 查找单个用户 -->
+		<action name="queryUserById" class="com.framework.authority.action.UserAction" method="queryUserById">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--导入用户 -->
+		<action name="studentImport" class="com.framework.authority.action.UserAction" method="studentImport">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--修改用户 -->
+		<action name="editUser" class="com.framework.authority.action.UserAction" method="editUser">
+			<result name="result>json" type="json">
+				<param name="root">ajaxResult</param>
+			</result>
+		</action>
+
+		<!--修改当前用户密码 -->
+		<action name="updateCurrentUserPwd" class="com.framework.authority.action.UserAction" method="updateCurrentUserPwd">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--重置用户密码 -->
+		<action name="resetPassword" class="com.framework.authority.action.UserAction" method="resetPassword">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+
+		<!--删除用户 -->
+		<action name="deleteUser" class="com.framework.authority.action.UserAction" method="deleteUser">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+
+		<!--下载导入模板 -->
+		<action name="downloadTemplate" class="com.framework.authority.action.UserAction" method="downloadTemplate">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!-- 导出学生 -->
+		<action name="exportExcel" class="com.framework.authority.action.UserAction" method="exportExcel">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		<!--获取姓名 -->
+		<action name="getCurrentUserName" class="com.framework.authority.action.UserAction" method="getCurrentUserName">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--未绑定机构的管理员 -->
+		<action name="queryAdminNotInOrganization" class="com.framework.authority.action.UserAction" method="queryAdminNotInOrganization">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+
+		<!--绑定机构的管理员 -->
+		<action name="queryAdminInOrganization" class="com.framework.authority.action.UserAction" method="queryAdminInOrganization">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--查看自身信息 -->
+		<action name="queryUserInfo" class="com.framework.authority.action.UserAction" method="queryUserInfo">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--修改自身信息 -->
+		<action name="updateUserInfo" class="com.framework.authority.action.UserAction" method="updateUserInfo">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--修改头像 -->
+		<action name="uploadUserPhoto" class="com.framework.authority.action.UserAction" method="uploadUserPhoto">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+	</package>
+</struts>

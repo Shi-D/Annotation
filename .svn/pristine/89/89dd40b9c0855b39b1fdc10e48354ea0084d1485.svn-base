@@ -1,0 +1,229 @@
+<%@ page import="java.util.Date"%>
+<%@ page import="com.framework.common.SystemContext"%>
+<%@ page import="com.framework.authority.entity.User"%>
+<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+    <title>作业管理</title>
+	<script>
+        // 公共模块
+        const modelUrls = {
+            'link': [
+                '../../css/teacherPage.css',
+				'../../css/teacherHomeworkManagement.css'
+            ],
+            'script': [
+                '../../js/action.js',
+                '../../js/preprocessor.js',
+                '../../js/table.js',
+                '../../js/teacherPages/homeworkManagement.js',
+            ],
+        };
+	</script>
+	<script src="../../js/settings.js"></script>
+</head>
+<body>
+<div class="main">
+	<div class="sider"></div>
+	<div class="main-body">
+		<div class="main-body-header"></div>
+		<div class="main-body-content">
+			<ul class="nav nav-tabs">
+				<li class="nav-item">
+					<a class="nav-link active" id="nav-homeworkManagement">作业管理</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-studentCorrention"></a>
+				</li>
+			</ul>
+			<div class="table-part" id="table-part"></div>
+			<div class="modal-area">
+				<div class="modal fade" id="modal-deleteHomework">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5>删除作业</h5>
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+						</div>
+						<div class="modal-body">
+							<p>您确认要删除作业 <span class="text-danger" id="modal-deleteHomework-span-homeworkName"></span>
+								吗?</p>
+						</div>
+						<div class="modal-footer">
+							<button class="btn btn-danger" data-dismiss="modal"
+									id="modal-deleteHomework-btn-ok">确认
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+				<div class="modal fade" id="modal-addHomework">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5>发布作业</h5>
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+							</div>
+							<div class="modal-body">
+								<form>
+									<div class="form-group">
+										<label for="modal-addHomework-input-homeworkName">
+											作业名
+											<span class="text-danger">*</span>
+										</label>
+										<input type="text" class="form-control" id="modal-addHomework-input-homeworkName">
+										<small class="form-text text-muted">20 个字以内</small>
+									</div>
+									<div class="form-group">
+										<label for="modal-addHomework-input-homeworkContent">
+											作业内容
+											<span class="text-danger">*</span>
+										</label>
+										<textarea class="form-control" id="modal-addHomework-input-homeworkContent"></textarea>
+										<small class="form-text text-muted">300 个字以内</small>
+									</div>
+									<div class="form-group">
+										<p>发布到班级</p>
+										<div class="modal-classList" id="modal-addHomework-dropdown-classList">
+											<div class="form-control modal-classList-item">
+												无可选班级
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label>
+											截止日期
+											<span class="text-danger">*</span>
+										</label>
+										<input type="date" class="form-control" id="modal-addHomework-input-limitDate"></input>
+									</div>
+									<div class="form-group">
+										<label>附件</label>
+										<input type="file" class="form-control" id="modal-addHomework-input-file"></input>
+										<small class="form-text text-muted">附件请控制在 5M 以内</small>
+									</div>
+								</form>
+								<div class="uploading-container" hidden>
+									<div class="uploading">
+										<div class="spinner-border mb-2" role="status">
+											<span class="sr-only">Loading...</span>
+										</div>
+										<p>上传中...这可能需要一些时间</p>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-primary" data-dismiss="modal"
+										id="modal-addHomework-btn-ok">确认
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal fade" id="modal-modifyHomework">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5>修改作业</h5>
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+							</div>
+							<div class="modal-body" id="modal-modifyHomework-modalBody">
+								<form>
+									<div class="form-group">
+										<label for="modal-modifyHomework-input-homeworkName">
+											作业名
+											<span class="text-danger">*</span>
+										</label>
+										<input type="text" class="form-control" id="modal-modifyHomework-input-homeworkName">
+										<small class="form-text text-muted">20 个字以内</small>
+									</div>
+									<div class="form-group">
+										<label for="modal-addHomework-input-homeworkContent">
+											作业内容
+											<span class="text-danger">*</span>
+										</label>
+										<textarea class="form-control" id="modal-modifyHomework-input-homeworkContent"></textarea>
+										<small class="form-text text-muted">300 个字以内</small>
+									</div>
+									<div class="form-group">
+										<p>发布到班级</p>
+										<div class="modal-classList" id="modal-modifyHomework-dropdown-classList">
+											<div class="form-control modal-classList-item">
+												无可选班级
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label>
+											截止日期
+											<span class="text-danger">*</span>
+										</label>
+										<input type="date" class="form-control" id="modal-modifyHomework-input-limitDate"></input>
+									</div>
+									<div class="form-group">
+										<label>附件</label>
+										<input type="file" class="form-control" id="modal-modifyHomework-input-file"></input>
+										<small class="form-text text-muted">附件请控制在 5M 以内</small>
+									</div>
+								</form>
+								<div class="uploading-container" hidden>
+									<div class="uploading">
+										<div class="spinner-border mb-2" role="status">
+											<span class="sr-only">Loading...</span>
+										</div>
+										<p>上传中...这可能需要一些时间</p>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-primary" data-dismiss="modal"
+										id="modal-modifyHomework-btn-ok">确定
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal fade" id="modal-correctHomework-2">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5>批改作业</h5>
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+							</div>
+							<div class="modal-body">
+								<p id="modal-correctHomework-answer"></p>
+								<p id="modal-correctHomework-file"></p>
+								<form>
+									<div class="form-group">
+										<label for="modal-correctHomework-input-grade">
+											评分
+											<span class="text-denger">*</span>
+										</label>
+										<input class="form-control" id="modal-correctHomework-input-grade">
+									</div>
+									<div class="form-group">
+										<label for="modal-correctHomework-input-comment">评语</label>
+										<textarea class="form-control" id="modal-correctHomework-input-comment"></textarea>
+									</div>
+								</form>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-primary" data-dismiss="modal"
+										id="modal-correctHomework-btn-ok">确定
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>
+
+

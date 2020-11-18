@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+	"http://struts.apache.org/dtds/struts-2.1.dtd" >
+<struts>
+	<package name="excel" extends="default-package" namespace="/excel">
+		<!--导出某本书的某个班级所有批注 -->
+		<action name="exportExcel" class="com.annotation.action.statistics.ExcelAction" method="exportExcel">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--导出某本书的某个班级所有批注 -->
+		<action name="exportStudentExcel" class="com.annotation.action.statistics.ExcelAction" method="exportStudentExcel">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+	</package>    
+
+ 
+</struts> 

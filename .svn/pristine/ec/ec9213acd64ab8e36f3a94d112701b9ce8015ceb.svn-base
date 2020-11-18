@@ -1,0 +1,82 @@
+<%@ page import="java.util.Date"%>
+<%@ page import="com.framework.common.SystemContext"%>
+<%@ page import="com.framework.authority.entity.User"%>
+<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../../common/commonRedirectIrrelevantType.jsp" %>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<title>个人中心</title>
+	<script>
+        // 公共模块
+        const modelUrls = {
+            'link': [
+                '../../css/commonUserInfo.css',
+            ],
+            'script': [
+                '../../js/action.js',
+                '../../js/preprocessor.js',
+                '../../js/common/userInfo.js',
+            ],
+        };
+	</script>
+	<script src="../../js/settings.js"></script>
+</head>
+<body>
+<div class="header"></div>
+<div class="main">
+	<div class="base-info-settings">
+		<h3>基本设置</h3>
+		<hr>
+		<form>
+			<div class="form-group">
+				<label for="input-self-introduction">个人简介</label>
+				<textarea type="text" class="form-control" id="input-self-introduction" rows="4"
+						  placeholder="说点什么吧……"></textarea>
+			</div>
+			<div class="form-group">
+				<label for="input-email">邮箱</label>
+				<input type="email" class="form-control" id="input-email">
+			</div>
+			<div class="form-group">
+				<label for="input-phone-number">手机号码</label>
+				<input type="tel" class="form-control" id="input-phone-number">
+			</div>
+			<span class="btn btn-primary" id="btn-update-base-info-settings">更新信息</span>
+		</form>
+		<div class="userSettings-userAvatar">
+			<p>头像</p>
+			<img class="img-userSettings-userAvatar" id="userSettings-userAvatar">
+			<form>
+				<label for="input-update-user-acatar" class="btn btn-outline-secondary"
+					   id="btn-update-user-avatar">更换头像</label>
+				<input id="input-update-user-acatar" type="file" accept="image/*" hidden>
+			</form>
+		</div>
+	</div>
+	<div class="security-info-settings">
+		<h3>安全设置</h3>
+		<hr>
+		<div class="update-password">
+			<form>
+				<div class="form-group">
+					<label for="input-old-password">旧密码</label>
+					<input type="text" class="form-control" id="input-old-password">
+				</div>
+				<div class="form-group">
+					<label for="input-new-password">新密码</label>
+					<input type="text" class="form-control" id="input-new-password">
+				</div>
+				<div class="form-group">
+					<label for="input-repeat-new-password">确认新密码</label>
+					<input type="text" class="form-control" id="input-repeat-new-password">
+				</div>
+				<span class="btn btn-danger" id="btn-update-password">修改密码</span>
+			</form>
+		</div>
+	</div>
+</div>
+</html>

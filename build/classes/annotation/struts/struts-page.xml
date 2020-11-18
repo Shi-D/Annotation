@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+	"http://struts.apache.org/dtds/struts-2.1.dtd" >
+<struts>
+	<package name="page" extends="default-package" namespace="/page">
+		 
+		<!--增加书籍页信息 -->
+		<action name="addPage" class="com.annotation.action.page.pageAction" method="addPage">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--增加书籍页信息 -->
+		<action name="addMark" class="com.annotation.action.page.pageAction" method="addMark">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--最后一次阅读的页 -->
+		<action name="lastPage" class="com.annotation.action.page.pageAction" method="lastPage">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--书签页-->
+		<action name="markPage" class="com.annotation.action.page.pageAction" method="markPage">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+	</package>    
+
+</struts> 

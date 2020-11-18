@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+	"http://struts.apache.org/dtds/struts-2.1.dtd" >
+<struts>
+	<package name="like" extends="default-package" namespace="/like">
+		
+		
+		<!--批注点赞-->
+		<action name="addAnnotationLike" class="com.annotation.action.books.likeAction" method="addAnnotationLike">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+
+		<!--批注取消点赞-->
+		<action name="deleteAnnotationLike" class="com.annotation.action.books.likeAction" method="deleteAnnotationLike">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--批注显示赞的数量-->
+		<action name="annotationLikeNumber" class="com.annotation.action.books.likeAction" method="annotationLikeNumber">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--评论点赞-->
+		<action name="addCommentLike" class="com.annotation.action.books.likeAction" method="addCommentLike">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+
+		<!--评论取消点赞-->
+		<action name="deleteCommentLike" class="com.annotation.action.books.likeAction" method="deleteCommentLike">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--评论显示赞的数量-->
+		<action name="commentLikeNumber" class="com.annotation.action.books.likeAction" method="commentLikeNumber">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+	</package>    
+ 
+</struts> 

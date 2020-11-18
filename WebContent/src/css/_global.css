@@ -1,0 +1,20 @@
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+* {
+  box-sizing: border-box;
+}
+.hidden {
+  display: none;
+}
+.disabled {
+  cursor: not-allowed;
+}
+button.disabled {
+  cursor: not-allowed;
+}
+a:hover {
+  text-decoration: none;
+}

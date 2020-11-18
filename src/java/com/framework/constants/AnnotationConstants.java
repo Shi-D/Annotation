@@ -1,0 +1,24 @@
+package com.framework.constants;
+
+
+
+/**
+ * 上传文件路径
+ * 
+ * 
+ */
+public class AnnotationConstants {
+	//118
+	//public static final String ABSOLUTE_URL = "C:/workspace64/Annotation/WebContent/account/";
+
+	//115
+	public static final String ABSOLUTE_URL = "E:/AnnotationUploadFile/account/";
+	public static final String UPLOAD_URL = "E:/AnnotationUploadFile/upload/";
+	//172
+//	public static final String ABSOLUTE_URL = "D:/AnnotationTempFile/account/";
+//	public static final String UPLOAD_URL = "D:/AnnotationTempFile/upload/";
+	//暂时没用
+//	public static final String VEDIO_STORE_ABSOLUTE_URL = "C:/workspace64/Annotation/WebContent/vedioStore/";
+	
+	
+}

@@ -1,0 +1,122 @@
+<%@ page import="java.util.Date"%>
+<%@ page import="com.framework.common.SystemContext"%>
+<%@ page import="com.framework.authority.entity.User"%>
+<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<title>校园书库</title>
+	<script>
+        // 公共模块
+        const modelUrls = {
+            'link': [
+                '../../css/teacherPage.css',
+            ],
+            'script': [
+                '../../js/action.js',
+                '../../js/preprocessor.js',
+                '../../js/table.js',
+                '../../js/teacherPages/storePage.js',
+            ],
+        };
+	</script>
+	<script src="../../js/settings.js"></script>
+</head>
+<body>
+<div class="main">
+	<div class="sider"></div>
+	<div class="main-body">
+		<div class="main-body-header"></div>
+		<div class="main-body-content">
+			<div class="table-part" id="table-part"></div>
+			<div class="modal-area">
+				<div class="modal fade" id="modal-addBook">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5>添加书籍</h5>
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+							</div>
+							<div class="modal-body">
+								<form>
+									<div class="form-group">
+										<label for="modal-addBook-input-bookName">
+											书名
+											<span class="text-danger">*</span>
+										</label>
+										<input type="text" class="form-control" id="modal-addBook-input-bookName">
+										<small class="form-text text-muted">书名在 20 个字以内</small>
+									</div>
+									<div class="form-group">
+										<label for="modal-addBook-input-author">
+											作者
+											<span class="text-danger">*</span>
+										</label>
+										<input type="text" class="form-control" id="modal-addBook-input-author">
+										<small class="form-text text-muted">作者在 20 个字以内</small>
+									</div>
+									<div class="form-group">
+										<label for="modal-addBook-input-introduction">书籍简介</label>
+										<textarea type="text" class="form-control" id="modal-addBook-input-introduction"></textarea>
+										<small class="form-text text-muted">书籍简介在 140 个字以内</small>
+									</div>
+									<div class="form-group">
+										<label for="modal-addBook-input-bookFile">
+											请选择书籍文件
+											<span class="text-danger">*</span>
+										</label>
+										<input type="file" class="form-control" id="modal-addBook-input-bookFile">
+										<small class="form-text text-muted">书籍大小请控制在 2M 以内，只支持 TXT 文件</small>
+									</div>
+									<div class="form-group">
+										<label for="modal-addBook-input-avatarFile">请选择书籍封面</label>
+										<input type="file" class="form-control" id="modal-addBook-input-avatarFile" accept=".png,.jpg">
+										<small class="form-text text-muted">图片大小请控制在 1M 以内，使用 PNG 或 JPG 格式</small>
+										<img class="mt-2" id="modal-addBook-input-avatarFile-img" style="width: 80%;">
+									</div>
+								</form>
+								<div class="uploading-container" hidden>
+									<div class="uploading">
+										<div class="spinner-border mb-2" role="status">
+											<span class="sr-only">Loading...</span>
+										</div>
+										<p>上传中...这可能需要一些时间</p>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-primary" data-dismiss="modal"
+										id="modal-addBook-btn-ok">确认
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal fade" id="modal-deleteBook">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5>删除书籍</h5>
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+							</div>
+							<div class="modal-body">
+								<p>您确认要删除书籍 <span class="text-danger" id="modal-deleteBook-span-bookName"></span>
+									吗?</p>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-danger" data-dismiss="modal"
+										id="modal-deleteBook-btn-ok">确认
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

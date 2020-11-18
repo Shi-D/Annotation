@@ -1,0 +1,180 @@
+package com.annotation.service;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
+import com.annotation.entity.Annotation;
+import com.framework.authority.entity.User;
+import com.framework.common.ResultPostModel;
+import com.framework.common.SystemContext;
+import com.framework.system.common.base.service.impl.BaseServiceImpl;
+
+@Service
+public class AnnotationService extends BaseServiceImpl<Annotation> {
+
+	/**
+	 * 根据bookId 和userId 查询 ,洪老师写的，使用hql查询方式
+	 * 
+	 * @param bookId
+	 * @param userId
+	 * @return
+	 */
+	public List<Annotation> queryAllAnnotations(Integer bookId, Integer userId) {
+		String hql = "from Annotation where bookId = ? and userId = ?";
+		return this.executeHQLQuery(hql, bookId, userId);
+	}
+	
+	public String getAnnotationImage(Integer annotationId, Integer userId) {
+		String hql = "select annotationImage as annotationImage from Annotation where annotationId =  ? and userId = ?";
+
+		System.out.println("++++++++++++++++++++++++++++++++++++++++");
+		
+		List<Map<String, Object>> tmp = this.getResultByHQL(hql, annotationId,
+					userId);
+
+		System.out.println(tmp.size());
+		if (tmp.size() < 1)
+			return null;
+		if(tmp.get(0).get("annotationImage")==null)
+			return null;
+		System.out.println("++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("?"+tmp.get(0).get("annotationImage"));
+		System.out.println("toString"+tmp.get(0).get("annotationImage").toString());
+		return tmp.get(0).get("annotationImage").toString();
+	}
+
+	/* 修改批注 */
+	public void updateAnnotation(Integer annotationId,
+			String annotationContent, String time) {
+		String hqlContent = "update ANNOTATION set ANNOTATION_CONTENT='"
+				+ annotationContent + "' WHERE ANNOTATION_ID= " + annotationId;
+		String hqlTime = "update ANNOTATION set CREATION_TIME='" + time
+				+ "' WHERE ANNOTATION_ID= " + annotationId;
+		this.executeSQLUpdate(hqlContent);
+		this.executeSQLUpdate(hqlTime);
+	}
+
+	/* 删除多个批注 */
+	public void deleteAnnotations(String annotationIds) {
+		String hql = "delete from Annotation where annotationId in("
+				+ annotationIds + ")";
+		this.executeHQLUpdate(hql);
+	}
+
+	public List<Map<String, Object>> annotationInfo(Integer organizationId) {
+		String hql = "select bookId as bookId, userId as userId, thumbsUp as thumbsUp, organizationId as organizationId, startParagraphNumber as startParagraphNumber, startOffset as startOffset, endParagraphNumber as endParagraphNumber, endOffset as endOffset, annotationContent as annotationContent, annotationStyle as annotationStyle, bookContentOfAnnotation as bookContentOfAnnotation, styleDisplay as styleDisplay, markDisplay as markDisplay, creationTime as creationTime from Annotation where organizationId = ?";
+		return this.getResultByHQL(hql, organizationId);
+	}
+
+	/* 根据bookId查询书籍批注 */
+	public List<Map<String, Object>> annotationInfoByBook(Integer bookId,
+			Integer userId) {
+
+		String hql = "select annotationId as annotationId,bookId as bookId, userId as userId, userCode as userCode,userName as author,startParagraphNumber as startParaId, startOffset as startOffset, endParagraphNumber as endParaId, endOffset as endOffset, annotationContent as content,bookContentOfAnnotation as content, creationTime as time, likeNum as like from UserAnnotationBookView where bookId = ?";
+		List<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
+		results = this.getResultByHQL(hql, bookId);
+		for (int i = 0; i < results.size(); i++) {
+			String hql1 = "select count(*) from AnnotationLike where annotationId = ? and likeUser = ?";
+			Integer count = this.getTotalCountByHQL(hql1,
+					results.get(i).get("annotationId"), userId);
+			System.out.println("%%%%" + count);
+			if (count > 0) {
+				results.get(i).put("islike", true);
+			} else {
+				results.get(i).put("islike", false);
+			}
+		}
+		return results;
+	}
+
+	public List<Map<String, Object>> annotationInfoByStudent(Integer userId) {
+		String hql = "select bookId as bookId, userId as userId, thumbsUp as thumbsUp, organizationId as organizationId, startParagraphNumber as startParagraphNumber, startOffset as startOffset, endParagraphNumber as endParagraphNumber, endOffset as endOffset, annotationContent as annotationContent, annotationImage as annotationImage, annotationStyle as annotationStyle, bookContentOfAnnotation as bookContentOfAnnotation, styleDisplay as styleDisplay, markDisplay as markDisplay, creationTime as creationTime from Annotation where userId = ?";
+		return this.getResultByHQL(hql, userId);
+	}
+
+	/* 查看某人某书批注 */
+	public List<Map<String, Object>> annotationInfoByStudentBookService(
+			Integer bookId, Integer userId) {
+		List<Map<String, Object>> temp;
+		User user = SystemContext.getCurrentUser();
+		try {
+			if(userId == null){userId = user.getId();}
+			String hql = "select annotationId as annotationId,bookId as bookId, userId as userId, userCode as userCode,userName as author,startParagraphNumber as startParaId, startOffset as startOffset, endParagraphNumber as endParaId, endOffset as endOffset, annotationContent as content, annotationImage as annotationImage, bookContentOfAnnotation as text, creationTime as time, likeNum as like from UserAnnotationBookView where bookId = ? and userId = ?";
+			temp = this.getResultByHQL(hql, bookId, userId);
+			
+			List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
+			data.addAll(temp);
+			
+			for(int i=0; i<data.size(); i++){
+				String link = "";
+				if(data.get(i).get("annotationImage")==null || user.getUsername()==null || data.get(i).get("annotationImage").equals(""))
+					link = null;
+				else
+					link="account/"+data.get(i).get("userCode").toString()+"/annotation/"+data.get(i).get("annotationImage").toString();
+				
+				data.get(i).put("annotationImage", link);
+				
+				if (data.get(i).get("like") != null
+						&& Integer.parseInt(data.get(i).get("like").toString()) > 0)
+					data.get(i).put("islike", true);
+				else
+					data.get(i).put("islike", false);
+			}
+			
+			if (userId != null) {
+				hql = "SELECT likeNum as like FROM UserAnnotationBookView WHERE bookId = ? and userId = ?";
+				temp.get(0).put(
+						"like",
+						this.getResultByHQL(hql, bookId, userId).get(0)
+								.get("like"));
+			}
+			ResultPostModel r = new ResultPostModel();
+			r.addResult("data", data, "status", "ok");
+			temp = r.getResult();
+		} catch (Exception e) {
+			temp = new ResultPostModel("status", "error").getResult();
+		}
+		return temp;
+	}
+
+	// 增加批注
+	public List<Map<String, Object>> addAnnotationService(Integer bookId,
+			Integer organizationId, Integer startParaId, Integer startOffset,
+			Integer endParaId, Integer endOffset, String annotationStyle,
+			String content, String text, Boolean styleDisplay,
+			Boolean markDisplay,String color,String page) {
+		List<Map<String, Object>> temp;
+		Annotation annotation = new Annotation();
+		User user = SystemContext.getCurrentUser();
+		try {
+			SimpleDateFormat dateFormat = new SimpleDateFormat(
+					"yyyy-MM-dd HH:mm:ss");
+			String time = dateFormat.format(new Date()).toString();
+			annotation.setBookId(bookId);
+			annotation.setUserId(user.getId());
+			annotation.setOrganizationId(organizationId);
+			annotation.setStartParagraphNumber(startParaId);
+			annotation.setStartOffset(startOffset);
+			annotation.setEndParagraphNumber(endParaId);
+			annotation.setEndOffset(endOffset);
+			annotation.setAnnotationStyle(annotationStyle);
+			annotation.setAnnotationContent(content);
+			annotation.setBookContentOfAnnotation(text);
+			annotation.setStyleDisplay(styleDisplay);
+			annotation.setMarkDisplay(markDisplay);
+			annotation.setColor(color);
+			annotation.setCreationTime(time);
+			annotation.setPage(page);
+			this.save(annotation);
+			temp = new ResultPostModel("annotationId",annotation.getAnnotationId(),"status","success").getResult();
+		} catch (Exception e) {
+			temp = new ResultPostModel("annotationId",null,"status","success").getResult();
+		}
+		return temp;
+	}
+}

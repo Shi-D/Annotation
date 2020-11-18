@@ -1,0 +1,128 @@
+* {
+  box-sizing: border-box;
+}
+.hidden {
+  display: none;
+}
+.disabled {
+  cursor: not-allowed;
+}
+button.disabled {
+  cursor: not-allowed;
+}
+a:hover {
+  text-decoration: none;
+}
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 30px;
+  text-align: center;
+  box-shadow: 5px 0 10px rgba(0, 0, 0, 0.3);
+}
+.userInfo-userAvatar {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+.header .img-logo {
+  height: 30px;
+  margin-right: 10px;
+}
+.main-body-header {
+  padding: 10px 30px;
+  display: flex;
+  justify-content: flex-end;
+}
+.dropdown-item {
+  cursor: pointer;
+}
+.dropdown-item.disabled {
+  color: #9e9e9e !important;
+  cursor: not-allowed;
+}
+.main {
+  padding: 50px 0;
+  background-color: #f8f9f9;
+}
+.readed {
+  display: flex;
+  flex-wrap: wrap;
+  position: relative;
+  min-height: 380px;
+  background-color: #fff;
+  padding: 50px 10% 20px 10%;
+}
+.book-card {
+  padding: 40px 50px 0 50px;
+  width: 235px;
+}
+.book-card img {
+  display: block;
+  height: 200px;
+  width: 135px;
+}
+.book-card .book-name {
+  margin-top: 10px;
+  font-weight: bold;
+}
+.book-card reading-process {
+  margin-top: 5px;
+}
+.book-card .book-avatar {
+  box-shadow: 2px 2px 12px #a6a6a6;
+}
+.no-book-avatar {
+  width: 135px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 0 10px 0;
+  color: #fff;
+  cursor: pointer;
+}
+.title {
+  position: absolute;
+  top: 0;
+  padding: 10px 20px;
+  background-color: #03a9f4;
+  color: #fff;
+  border-radius: 0 0 5px 5px;
+}
+.book-list {
+  display: flex;
+  flex-wrap: wrap;
+  clear: both;
+}
+.bookshelf {
+  padding: 20px 10% 20px 10%;
+  min-height: 500px;
+}
+.table-query {
+  margin-top: 20px;
+}
+.table-query > div {
+  display: inline-block;
+}
+.table-query > div:last-child {
+  float: right;
+}
+.dropdown {
+  display: inline-block;
+  margin-right: 10px;
+}
+.dropdown + div {
+  display: inline-block;
+}
+.dropdown-item {
+  cursor: pointer;
+}

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+	"http://struts.apache.org/dtds/struts-2.1.dtd" >
+<struts>
+	<package name="comment" extends="default-package" namespace="/comment">
+		
+		
+		<!--显示评论-->
+		<action name="lookOverComment" class="com.annotation.action.comment.commentAction" method="lookOverComment">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+
+		<!--添加评论-->
+		<action name="addComment" class="com.annotation.action.comment.commentAction" method="addComment">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+		
+		<!--删除评论-->
+		<action name="deleteComment" class="com.annotation.action.comment.commentAction" method="deleteComment">
+			<result name="result>json" type="json">
+				<param name="root">results</param>
+			</result>
+		</action>
+	</package>    
+ 
+</struts> 

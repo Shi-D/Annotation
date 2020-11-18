@@ -1,0 +1,250 @@
+<%@ page import="java.util.Date"%>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="com.framework.common.SystemContext"%>
+<%@ page import="com.framework.authority.entity.User"%>
+<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%ArrayList<Integer> type = new ArrayList<Integer>();type.add(TYPE_TEACHER); %>
+<%@include file = "../../../common/commonRedirect.jsp" %>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<title>我的班级</title>
+	<script>
+        // 公共模块
+        const modelUrls = {
+            'link': [
+                '../../css/teacherPage.css',
+            ],
+            'script': [
+                '../../js/action.js',
+                '../../js/preprocessor.js',
+                '../../js/table.js',
+                '../../js/teacherPages/classPage.js',
+            ],
+        };
+	</script>
+	<script src="../../js/settings.js"></script>
+</head>
+<body>
+<div class="main">
+	<div class="sider"></div>
+	<div class="main-body">
+		<div class="main-body-header"></div>
+		<div class="main-body-content">
+			<ul class="nav nav-tabs">
+				<li class="nav-item">
+					<a class="nav-link active" id="nav-classManagement">班级管理</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-studentManagement">学生管理</a>
+				</li>
+			</ul>
+
+			<div class="table-part" id="table-part"></div>
+			<div class="modal-area">
+				<div class="modal fade" id="modal-addClass">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5>添加班级</h5>
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+							</div>
+							<div class="modal-body">
+								<form>
+									<div class="form-group">
+										<label for="modal-addClass-input-className">班级名称：</label>
+										<input class="form-control" type="text" placeholder="请输入班级名"
+											   id="modal-addClass-input-className">
+									</div>
+								</form>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-primary" data-dismiss="modal"
+										id="modal-addClass-btn-ok">添加
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal fade" id="modal-deleteClass">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5>移除班级</h5>
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+							</div>
+							<div class="modal-body">
+								<p>您确认要移除班级 <span class="text-danger" id="modal-deleteClass-span-className"></span>
+									吗?</p>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-danger" data-dismiss="modal"
+										id="modal-deleteClass-btn-ok">确认
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal fade" id="modal-addStudent">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5>添加学生 - <span id="modal-addStudent-span-className"></span></h5>
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+							</div>
+							<div class="modal-body ">
+								<input class="form-control" type="text" placeholder="查询学生姓名"
+									   id="modal-addStudent-input-queryValue">
+								<div class="table-container">
+									<table class="table">
+										<thead>
+										<tr>
+											<th scope="col">
+												<input type="checkbox" id="modal-addStudent-input-checkAll">
+											</th>
+											<th scope="col">序号</th>
+											<th scope="col">姓名</th>
+											<th scope="col">学号</th>
+										</tr>
+										</thead>
+										<tbody id="modal-addStudent-tbody-list">
+
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-primary" id="modal-addStudent-btn-ok">添加</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal fade" id="modal-deleteStudent">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5>移除学生 - <span id="modal-deleteStudent-span-className"></span></h5>
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+							</div>
+							<div class="modal-body">
+								<input class="form-control" type="text" placeholder="输入学生姓名"
+									   id="modal-deleteStudent-input-queryValue">
+								<div class="table-container">
+									<table class="table">
+										<thead>
+										<tr>
+											<th scope="col">
+												<input type="checkbox" id="modal-deleteStudent-input-checkAll">
+											</th>
+											<th scope="col">序号</th>
+											<th scope="col">姓名</th>
+											<th scope="col">学号</th>
+										</tr>
+										</thead>
+										<tbody id="modal-deleteStudent-tbody-list">
+
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-danger" id="modal-deleteStudent-btn-ok">移除</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal fade" id="modal-pushBook">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5>推送书籍 - <span id="modal-pushBook-span-className"></span></h5>
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+							</div>
+							<div class="modal-body">
+								<input class="form-control" type="text" placeholder="输入书籍名称"
+									   id="modal-pushBook-input-queryValue">
+								<div class="table-container">
+									<table class="table">
+										<thead>
+										<tr>
+											<th scope="col">
+												<input type="checkbox" id="modal-pushBook-input-checkAll">
+											</th>
+											<th scope="col">序号</th>
+											<th scope="col">书籍</th>
+											<th scope="col">作者</th>
+										</tr>
+										</thead>
+										<tbody id="modal-pushBook-tbody-list">
+
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-primary" id="modal-pushBook-btn-ok">推送</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal fade" id="modal-deleteBook">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5>移除书籍 - <span id="modal-deleteBook-span-className"></span></h5>
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+							</div>
+							<div class="modal-body">
+								<input class="form-control" type="text" placeholder="输入书籍名称"
+									   id="modal-deleteBook-input-queryValue">
+								<div class="table-container">
+									<table class="table">
+										<thead>
+										<tr>
+											<th scope="col">
+												<input type="checkbox" id="modal-deleteBook-input-checkAll">
+											</th>
+											<th scope="col">序号</th>
+											<th scope="col">书籍</th>
+											<th scope="col">作者</th>
+										</tr>
+										</thead>
+										<tbody id="modal-deleteBook-tbody-list">
+
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-danger" id="modal-deleteBook-btn-ok">移除
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal fade" id="modal-resetPassword">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5>重置密码</h5>
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+							</div>
+							<div class="modal-body">
+								<p>您确认要重置学生 <span class="text-danger" id="modal-resetPassword-span-studentNames"></span> 的密码吗？</p>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-danger" id="modal-resetPassword-btn-ok">确定
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,318 @@
+package com.annotation.action.homeworkmanagement;
+
+import java.io.File;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.framework.authority.entity.User;
+import com.framework.authority.service.UserService;
+import com.framework.common.ResultPostModel;
+import com.framework.common.SystemContext;
+import com.framework.system.common.base.action.BaseGridAction;
+import com.annotation.service.ClassesService;
+import com.annotation.service.HomeworkService;
+
+public class HomeworkInfoAction extends BaseGridAction {
+
+	private static final long serialVersionUID = -3059299856386929281L;
+
+	@Autowired
+	HomeworkService homeworkService;
+	@Autowired
+	ClassesService classesService;
+	@Autowired
+	UserService userService;
+	private String studentIds;
+	private String evaluation;
+	private String score;
+	private String homeworkIds;
+	private Integer homeworkId;
+	private String homeworkName;
+	private String homeworkContent;
+	private Date deadline;
+	private File homeworkFile;
+	private String homeworkFileName;
+	private File file;
+	private String fileName;
+	private String classIds;
+	private Integer pageNo = 1;
+	private Integer pageSize = 20;
+	private Boolean search = true;
+	private Map<String, Object> basicInfo = new HashMap<String, Object>();
+	private String studentHomeworkContent;
+	private Integer studentId;
+
+	// 老师端返回所有自己发布的作业
+	public String allHomeworkList() {
+		User user = SystemContext.getCurrentUser();
+		results = homeworkService.findTeaHomework(user.getId());
+		return "result>json";
+	}
+	
+	//根据作业id查看作业详细信息（用于修改作业）
+	public String getHomeworkInfo(){
+		User user = SystemContext.getCurrentUser();
+		if(user.getUserType()==1){
+			results = homeworkService.getHomeworkService(this.getHomeworkId());
+		}
+		return "result>json";
+	}
+
+	// 有作业的班级
+	public String classHaveHW() {
+		User user = SystemContext.getCurrentUser();
+		results = homeworkService.teaClassDropDownBox(user.getId());
+		System.out.println("============="+results);
+		return "result>json";
+	}
+
+	// 根据作业id 查看作业 老师端
+	public String homeworkByHWId() {
+		results = homeworkService.findHomeworkByIdService(this.getHomeworkId());
+		return "result>json";
+	}
+
+	// 根据学生id查找作业
+	public String stuHomeworkList() {
+		User user = SystemContext.getCurrentUser();
+		try {
+			results = homeworkService.stuSearchHomeWork(user.getId());
+		} catch (ParseException e) {
+			results = new ResultPostModel("result", false);
+		}
+		return "result>json";
+	}
+
+	// 老师发布作业
+	public String addHomework() {
+			System.out.println("----------"+this.getHomeworkFileName()+"---"+this.getHomeworkFile());
+		results = homeworkService.addHomeworkService(
+				this.getHomeworkFileName(), this.getHomeworkFile(),
+				this.getHomeworkName(), this.getDeadline(),
+				this.getHomeworkContent(), this.getClassIds());
+		return "result>json";
+	}
+	
+	// 老师修改作业
+	public String modifyHomework() {
+		results = homeworkService.modifyHomeworkService(this.getHomeworkId(),
+				this.getHomeworkFileName(), this.getHomeworkFile(),
+				this.getHomeworkName(), this.getDeadline(),
+				this.getHomeworkContent(), this.getClassIds());
+		return "result>json";
+	}
+
+	// 教师删除发布的作业
+	public String deleteHomework() {
+		results = homeworkService.deleteHomeworkService(this.getHomeworkIds());
+		return "result>json";
+	}
+
+	// 教师查看学生提交的作业
+	public String querySubmitedHomework() {
+		results = homeworkService.querySubmitHomeworkService(this
+				.getHomeworkId());
+		return "result>json";
+	}
+
+	// 老师批改作业(返回的是学生文件地址和作业内容 )
+	public String teaCorrectHomework() {
+		try {
+			results = homeworkService.teaCorrectWorkService(
+					this.getStudentId(), this.getHomeworkId());
+		} catch (Exception e) {
+			results = new ResultPostModel("result", false).getResult();
+		}
+		return "result>json";
+	}
+
+	// 保存作业 学生 还没有改
+	public String evaluateSubmitedHomework() {
+		results = new ArrayList<Map<String, Object>>();
+		User user = SystemContext.getCurrentUser();
+		if (user.getUserType() == 1) {
+			try {
+				if (this.getEvaluation() == null)
+					this.setEvaluation("");
+				homeworkService.updateSubmitedHomework(this.getStudentIds(),
+						this.getHomeworkId(), this.getEvaluation(),
+						this.getScore());
+				basicInfo.put("result", true);
+			} catch (Exception e) {
+				System.out.println(e);
+				basicInfo.put("result", false);
+			}
+			results.add(basicInfo);
+			return "result>json";
+		}
+		basicInfo.put("result", "没有权限");
+		return "result>json";
+	}
+
+	// 提交作业
+	public String submitHomework() {
+		results = homeworkService.submitHomeworkService(
+				this.getFileName(), this.getFile(),
+				this.getHomeworkId(), this.getHomeworkContent());
+		return "result>json";
+	}
+	
+	// 查询可以发布的班级
+	public String queryClassesByUserId() {
+		User user = SystemContext.getCurrentUser();
+		if (user.getUserType() == 1)
+			results = classesService.queryClassesByTeacherId(user.getId());
+		return "result>json";
+	}
+
+	public String getStudentIds() {
+		return studentIds;
+	}
+
+	public void setStudentIds(String studentIds) {
+		this.studentIds = studentIds;
+	}
+
+	public String getEvaluation() {
+		return evaluation;
+	}
+
+	public void setEvaluation(String evaluation) {
+		this.evaluation = evaluation;
+	}
+
+	public String getScore() {
+		return score;
+	}
+
+	public void setScore(String score) {
+		this.score = score;
+	}
+
+	public Integer getHomeworkId() {
+		return homeworkId;
+	}
+
+	public void setHomeworkId(Integer homeworkId) {
+		this.homeworkId = homeworkId;
+	}
+
+	public String getHomeworkIds() {
+		return homeworkIds;
+	}
+
+	public void setHomeworkIds(String homeworkIds) {
+		this.homeworkIds = homeworkIds;
+	}
+
+	public String getClassIds() {
+		return classIds;
+	}
+
+	public void setClassIds(String classIds) {
+		this.classIds = classIds;
+	}
+
+	public File getHomeworkFile() {
+		return homeworkFile;
+	}
+
+	public void setHomeworkFile(File homeworkFile) {
+		this.homeworkFile = homeworkFile;
+	}
+
+	public String getHomeworkName() {
+		return homeworkName;
+	}
+
+	public void setHomeworkName(String homeworkName) {
+		this.homeworkName = homeworkName;
+	}
+
+	public Date getDeadline() {
+		return deadline;
+	}
+
+	public void setDeadline(Date deadline) {
+		this.deadline = deadline;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public Integer getPageNo() {
+		return pageNo;
+	}
+
+	public void setPageNo(Integer pageNo) {
+		this.pageNo = pageNo;
+	}
+
+	public Integer getPageSize() {
+		return pageSize;
+	}
+
+	public void setPageSize(Integer pageSize) {
+		this.pageSize = pageSize;
+	}
+
+	public Boolean getSearch() {
+		return search;
+	}
+
+	public void setSearch(Boolean search) {
+		this.search = search;
+	}
+
+	public String getHomeworkContent() {
+		return homeworkContent;
+	}
+
+	public void setHomeworkContent(String homeworkContent) {
+		this.homeworkContent = homeworkContent;
+	}
+
+	public String getHomeworkFileName() {
+		return homeworkFileName;
+	}
+
+	public void setHomeworkFileName(String homeworkFileName) {
+		this.homeworkFileName = homeworkFileName;
+	}
+
+	public String getStudentHomeworkContent() {
+		return studentHomeworkContent;
+	}
+
+	public void setStudentHomeworkContent(String studentHomeworkContent) {
+		this.studentHomeworkContent = studentHomeworkContent;
+	}
+
+	public Integer getStudentId() {
+		return studentId;
+	}
+
+	public void setStudentId(Integer studentId) {
+		this.studentId = studentId;
+	}
+
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+	
+
+}

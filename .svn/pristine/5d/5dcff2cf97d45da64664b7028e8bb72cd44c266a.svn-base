@@ -1,0 +1,513 @@
+package com.annotation.action.books;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.annotation.entity.Annotation;
+import com.annotation.entity.Books;
+import com.annotation.service.AnnotationService;
+import com.framework.authority.entity.User;
+import com.framework.common.SystemContext;
+import com.framework.system.common.base.action.BaseGridAction;
+import com.framework.utils.URLUtils;
+
+public class annotationAction extends BaseGridAction {
+	private static final long serialVersionUID = 1L;
+	private Annotation annotation = new Annotation();
+	private Books books;
+	private User user;
+	@Autowired
+	private AnnotationService annotationService;
+
+	private Integer annotationId;
+
+	private Integer bookId;
+	private Integer userId;
+	private String userCode;
+
+	public String getUserCode() {
+		return userCode;
+	}
+
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
+
+	private Integer organizationId;
+	private Integer startParaId;
+	private Integer startOffset;
+	private Integer endParaId;
+	private Integer endOffset;
+	private String content = "";// 前端传来的内容
+	
+	private String bookContentOfAnnotation;// 数据库和实体取名，为书籍的原文本。
+	private String text = "";// 前端传来的书籍原文本
+	private String color;
+	private String time;// 备用一个String time，用于接收和更新等
+
+	/** 以下暂时前端不传过来 **/
+	private Boolean styleDisplay;// 暂时不用
+	private Boolean markDisplay;// 暂时不用
+	private Integer pageNo;// 暂时不用
+	private Integer pageSize;// 暂时不用
+	private Boolean search;// 暂时不用
+	private String annotationStyle;// 暂时不用
+	private Integer thumbsUp;// 暂时不用
+
+	private String bookIds;
+	private String bookName;
+	private Integer classId;
+	private Integer page;
+	private String classIds;
+	private String annotationIds;
+
+	private File annotationPic;
+	private String annotationPicFileName;//评论的图片名称
+
+	/* creation time时间 */
+	Date date = new Date();
+
+	/*
+	 * @return
+	 * 
+	 * @throws Exception
+	 */
+	// 添加批注
+	public String addAnnotation() throws Exception {
+		results = annotationService.addAnnotationService(bookId, organizationId, startParaId, startOffset,
+				endParaId, endOffset, annotationStyle, content, text,
+				styleDisplay, markDisplay, color, page.toString());
+		return "result>json";
+	}
+
+	public Integer getPage() {
+		return page;
+	}
+
+	public void setPage(Integer page) {
+		this.page = page;
+	}
+
+	// 删除单个批注
+	public String deleteAnnotation() {
+		Map<String, Object> basicInfo = new HashMap<String, Object>();
+		results = new ArrayList<Map<String, Object>>();
+		try {
+			annotation.setAnnotationId(annotationId);
+			annotationService.delete(annotation);
+
+			basicInfo.put("annotationId", annotation.getAnnotationId());
+			basicInfo.put("status", "success");
+
+		} catch (Exception e) {
+			basicInfo.put("annotationId", annotation.getAnnotationId());
+			basicInfo.put("status", "error");
+
+		}
+		results.add(basicInfo);
+		return "result>json";
+	}
+
+	// 删除多个批注
+	public String deleteAnnotations() {
+		try {
+			annotationService.deleteAnnotations(annotationIds);
+			System.out.println("删除完成！");
+			ajaxResult.setSubOk(true);
+		} catch (Exception e) {
+			System.out.println("删除失败！");
+			ajaxResult.setSubOk(false);
+		}
+		return "result>json";
+	}
+
+	/**
+	 * 更新批注 可根据传入参数不同更新不同参数
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings({ "unused", "null" })
+	public String updateAnnotation() {
+		User user = SystemContext.getCurrentUser();
+		Map<String, Object> basicInfo = new HashMap<String, Object>();
+		Map<String, Object> imageInfo = new HashMap<String, Object>();
+		results = new ArrayList<Map<String, Object>>();
+		String newFileName = "";
+		
+		try {
+			/* 获得图片的保存路径 */
+			File file = new File(URLUtils.generateURLforAnnotation(user.getUsername()));
+			if (!file.exists())
+				file.mkdirs();
+			
+			if (null != this.getAnnotationPic()) {
+				Date date = new Date();
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+				newFileName = dateFormat.format(date)+".png";
+				File copy = new File(file, newFileName);
+				
+				/* 删除原图片文件 */
+				String oldFileName = annotationService.getAnnotationImage(annotationId, user.getId());
+
+				if(oldFileName!=null && oldFileName!="" && oldFileName!="null"){
+					File oldFile = new File(file, oldFileName);
+					oldFile.delete();
+				}
+				
+				/* 复制图片文件,放到目录下 */
+				FileUtils.copyFile(this.getAnnotationPic(), copy);
+				
+			} else {
+				newFileName = null;
+			}
+			SimpleDateFormat dateFormat = new SimpleDateFormat(
+					"yyyy-MM-dd HH:mm:ss");
+			time = dateFormat.format(date);
+			String sql = "";
+			if(null==newFileName)
+				sql = "update ANNOTATION set ANNOTATION_CONTENT='" + content
+				+ "', CREATION_TIME='"+ time 
+				+ "' WHERE ANNOTATION_ID = " + annotationId + " and USER_ID = " + user.getId();
+			else
+				sql = "update ANNOTATION set ANNOTATION_CONTENT='" + content
+					+ "', ANNOTATION_IMAGE = '"+newFileName+"',CREATION_TIME='"
+					+ time + "' WHERE ANNOTATION_ID= " + annotationId + " and USER_ID = " + user.getId();
+		
+			annotationService.executeSQLUpdate(sql);
+
+			basicInfo.put("status", "ok");
+			results.add(basicInfo);
+			if(null!=newFileName){
+				imageInfo.put("annotationImage", "account/"+user.getUsername()+"/annotation/"+newFileName);
+				results.add(imageInfo);
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+			basicInfo.put("status", "error");
+			results.add(basicInfo);
+		}
+
+		return "result>json";
+	}
+
+	// 查看所有批注
+	@SuppressWarnings("unchecked")
+	public String annotationInfo() {
+		User currentUser = new User();
+		currentUser.setOrganizationId(1);
+
+		results = annotationService.annotationInfo(currentUser
+				.getOrganizationId());
+		return "result>json";
+	}
+
+	// 查看某人批注
+	public String studentAnnotationInfo() {
+		User user = SystemContext.getCurrentUser();
+		if (null == userId)
+			userId = user.getId();
+		results = annotationService.annotationInfoByStudent(userId);
+		return "result>json";
+	}
+
+	// 根据userId查询，查看某人某书批注
+	public String studentBookAnnotationInfo() {
+		User user = SystemContext.getCurrentUser();
+		results = annotationService.annotationInfoByStudentBookService(
+				this.getBookId(), userId);
+		return "result>json";
+	}
+
+	// 根据userCode，查看某人某书批注
+	public String studentBookAnnotaionInfoByCode() {
+		String hql = "select annotationId as annotationId,bookId as bookId, userId as userId, thumbsUp as thumbsUp, startParagraphNumber as startParagraphNumber, startOffset as startOffset, endParagraphNumber as endParagraphNumber, endOffset as endOffset, annotationContent as annotationContent, annotationStyle as annotationStyle, bookContentOfAnnotation as bookContentOfAnnotation, styleDisplay as styleDisplay, markDisplay as markDisplay from Annotation where userCode = ? and bookId = ?";
+		results = annotationService.getResultByHQL(hql, userCode, bookId);
+		return "result>json";
+	}
+
+	// 学生列表显示
+	public String classStudentList() {
+		User user = SystemContext.getCurrentUser();
+		List<Map<String, Object>> userClass;// 用于存放班级
+		List<Map<String, Object>> userTeacher;// 用于存放老师
+		Map<String, Object> basicInfo = new HashMap<String, Object>();
+		results = new ArrayList<Map<String, Object>>();
+
+		// 老师的学生列表
+		if (user.getUserType() == 1) {
+			String hqlClass = "select distinct classId as classId, className as className from TeacherStudentV where teacherId = '"
+					+ user.getId() + "'";
+			userClass = annotationService.getResultByHQL(hqlClass);
+
+			for (int i = 0; i < userClass.size(); i++) {
+				String className = userClass.get(i).get("className").toString();
+				String hqlUser = "select distinct studentId as userId, studentName as studentName, studentCode as studentCode from StudentInfo2V where className  like '%"
+						+ className + "%'";
+				basicInfo.put(userClass.get(i).get("className").toString(),
+						annotationService.getResultByHQL(hqlUser));
+			}
+			results.add(basicInfo);
+		} else if (user.getUserType() == 2) {
+			String hqlClass = "select distinct classId as classId, className as className from TeacherStudentV where studentId = "
+					+ user.getId();
+			userClass = annotationService.getResultByHQL(hqlClass);
+			for (int i = 0; i < userClass.size(); i++) {
+				String className = userClass.get(i).get("className").toString();
+				String hqlUser = "select distinct studentId as userId,studentName as name, studentCode as code from StudentInfo2V where className  like '%"
+						+ className + "%'";
+				basicInfo.put(userClass.get(i).get("className").toString(),
+						annotationService.getResultByHQL(hqlUser));
+			}
+
+			String sqlTeacher = "select distinct TEACHER_ID AS teacherId ,TEACHER_CODE AS code,TEACHER_NAME AS name FROM TeacherStudentView where STUDENT_ID = "
+					+ user.getId();
+			userTeacher = annotationService.getResultBySQL(sqlTeacher);
+			results.add(basicInfo);
+			results.addAll(userTeacher);
+		}
+		return "result>json";
+	}
+
+	public Integer getAnnotationId() {
+		return annotationId;
+	}
+
+	public void setAnnotationId(Integer annotationId) {
+		this.annotationId = annotationId;
+	}
+
+	public String getAnnotationIds() {
+		return annotationIds;
+	}
+
+	public void setAnnotationIds(String annotationIds) {
+		this.annotationIds = annotationIds;
+	}
+
+	public Books getBooks() {
+		return books;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public Integer getThumbsUp() {
+		return thumbsUp;
+	}
+
+	public void setThumbsUp(Integer thumbsUp) {
+		this.thumbsUp = thumbsUp;
+	}
+
+	public Integer getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(Integer organizationId) {
+		this.organizationId = organizationId;
+	}
+
+	public Integer getStartOffset() {
+		return startOffset;
+	}
+
+	public void setStartOffset(Integer startOffset) {
+		this.startOffset = startOffset;
+	}
+
+	public Integer getEndOffset() {
+		return endOffset;
+	}
+
+	public void setEndOffset(Integer endOffset) {
+		this.endOffset = endOffset;
+	}
+
+	public String getAnnotationStyle() {
+		return annotationStyle;
+	}
+
+	public void setAnnotationStyle(String annotationStyle) {
+		this.annotationStyle = annotationStyle;
+	}
+
+	public Boolean getStyleDisplay() {
+		return styleDisplay;
+	}
+
+	public void setStyleDisplay(Boolean styleDisplay) {
+		this.styleDisplay = styleDisplay;
+	}
+
+	public Boolean getMarkDisplay() {
+		return markDisplay;
+	}
+
+	public void setMarkDisplay(Boolean markDisplay) {
+		this.markDisplay = markDisplay;
+	}
+
+	public String getBookContentOfAnnotation() {
+		return bookContentOfAnnotation;
+	}
+
+	public void setBookContentOfAnnotation(String bookContentOfAnnotation) {
+		this.bookContentOfAnnotation = bookContentOfAnnotation;
+	}
+
+	public Integer getStartParaId() {
+		return startParaId;
+	}
+
+	public void setStartParaId(Integer startParaId) {
+		this.startParaId = startParaId;
+	}
+
+	public Integer getEndParaId() {
+		return endParaId;
+	}
+
+	public void setEndParaId(Integer endParaId) {
+		this.endParaId = endParaId;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
+	}
+
+	public void setBooks(Books books) {
+		this.books = books;
+	}
+
+	public Integer getPageNo() {
+		return pageNo;
+	}
+
+	public void setPageNo(Integer pageNo) {
+		this.pageNo = pageNo;
+	}
+
+	public Integer getPageSize() {
+		return pageSize;
+	}
+
+	public void setPageSize(Integer pageSize) {
+		this.pageSize = pageSize;
+	}
+
+	public Boolean getSearch() {
+		return search;
+	}
+
+	public void setSearch(Boolean search) {
+		this.search = search;
+	}
+
+	public Integer getBookId() {
+		return bookId;
+	}
+
+	public void setBookId(Integer bookId) {
+		this.bookId = bookId;
+	}
+
+	public String getBookIds() {
+		return bookIds;
+	}
+
+	public void setBookIds(String bookIds) {
+		this.bookIds = bookIds;
+	}
+
+	public String getBookName() {
+		return bookName;
+	}
+
+	public void setBookName(String bookName) {
+		this.bookName = bookName;
+	}
+
+	public Integer getClassId() {
+		return classId;
+	}
+
+	public void setClassId(Integer classId) {
+		this.classId = classId;
+	}
+
+	public String getClassIds() {
+		return classIds;
+	}
+
+	public void setClassIds(String classIds) {
+		this.classIds = classIds;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+
+	public String getAnnotationPicFileName() {
+		return annotationPicFileName;
+	}
+
+	public void setAnnotationPicFileName(String annotationPicFileName) {
+		this.annotationPicFileName = annotationPicFileName;
+	}
+
+	public File getAnnotationPic() {
+		return annotationPic;
+	}
+
+	public void setAnnotationPic(File annotationPic) {
+		this.annotationPic = annotationPic;
+	}
+	
+	
+}

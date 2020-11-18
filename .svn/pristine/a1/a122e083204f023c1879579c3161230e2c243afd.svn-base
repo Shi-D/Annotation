@@ -1,0 +1,90 @@
+$(function () {
+    let actions = namespace.actions;
+    
+    actions.getUserInfo(userInfo => {
+        if (userInfo['avatar']) {
+            let avatarUrl = userInfo['avatar'];
+            $('#userSettings-userAvatar').attr('src', avatarUrl);
+        }
+        
+        if (userInfo['introduction']) {
+            $('#input-self-introduction').val(userInfo['introduction']);
+        }
+        
+        if (userInfo['email']) {
+            $('#input-email').val(userInfo['email']);
+        }
+        
+        if (userInfo['phoneNumber']) {
+            $('#input-phone-number').val(userInfo['phoneNumber']);
+        }
+        
+        recordData({
+            'data.userInfo': userInfo,
+        })
+    });
+    
+    $(`.user-info .dropdown-item:contains(${document.title})`).addClass('disabled');
+    
+    // 事件注册
+    // 更新用户信息按钮
+    $('#btn-update-base-info-settings').click(e => {
+        let introduction = $('#input-self-introduction').val();
+        let email = $('#input-email').val();
+        let phoneNumber = $('#input-phone-number').val();
+        
+        actions.updateUserInfo(introduction, email, phoneNumber, status => {
+            if (status) {
+                alert('更新信息成功');
+            } else {
+                alert('更新信息失败');
+            }
+        });
+    });
+    
+    // 更新头像按钮
+    $('#input-update-user-acatar').change(e => {
+        let file = e.target.files[0];
+        actions.updateUserAvatar(file, status => {
+            if (status) {
+                alert('更新信息成功');
+                location.href = location.href;
+            } else {
+                alert('更新信息失败');
+            }
+        })
+    });
+    
+    $('#btn-update-password').click(e => {
+        let oldPassword = $('#input-old-password').val();
+        let newPassword = $('#input-new-password').val();
+        let repeatPassword = $('#input-repeat-new-password').val();
+        
+        let alertInfo = '';
+        
+        if (!oldPassword) {
+            alertInfo = '请输入旧密码';
+        } else if (!newPassword) {
+            alertInfo = '请输入新密码';
+        } else if (!repeatPassword) {
+            alertInfo = '请确认新密码';
+        } else if (newPassword !== repeatPassword) {
+            alertInfo = '两次输入的密码不相同';
+        }
+        
+        if (alertInfo !== '') {
+            alert(alertInfo);
+            return false;
+        }
+        
+        actions.updatePassword(oldPassword, newPassword, repeatPassword, status => {
+            if(status){
+                alert('修改密码成功');
+                location.href = location.href;
+            }else{
+                alert('旧密码错误，修改失败');
+            }
+        })
+        
+    })
+})

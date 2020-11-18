@@ -1,0 +1,40 @@
+@import "_global";
+@import "_variable";
+@import "_header";
+
+.main {
+	display: flex;
+	flex-direction: column;
+	padding: 30px 20% 0 20%;
+
+	> div {
+		width: 500px;
+		display: inline-block;
+		margin-bottom: 50px;
+	}
+}
+
+.base-info-settings {
+	position: relative;
+}
+
+.userSettings-userAvatar {
+	position: absolute;
+	top: 100px;
+	right: -230px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.img-userSettings-userAvatar {
+	margin-bottom: 20px;
+	height: 200px;
+	width: 200px;
+	border-radius: 50%;
+	box-shadow: @shadow;
+}
+
+textarea {
+	resize: none;
+}
