@@ -18,9 +18,9 @@ public class AnnotationConstants {
 //	public static final String ABSOLUTE_URL = "D:/AnnotationTempFile/account/";
 //	public static final String UPLOAD_URL = "D:/AnnotationTempFile/upload/";
 
-	//shiyingdan
-	public static final String ABSOLUTE_URL = "Users/shiyingdan/AnnotationTempFile/account/";
-	public static final String UPLOAD_URL = "Users/shiyingdan/AnnotationTempFile/upload/";
+	//mine
+	public static final String ABSOLUTE_URL = "Users/xxx/AnnotationTempFile/account/";
+	public static final String UPLOAD_URL = "Users/xxx/AnnotationTempFile/upload/";
 	//暂时没用
 //	public static final String VEDIO_STORE_ABSOLUTE_URL = "C:/workspace64/Annotation/WebContent/vedioStore/";
 	
